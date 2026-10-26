@@ -1,0 +1,18 @@
+label,uom_from,uom_to,factor,note
+Glucose,mg/dL,mmol/L,0.0555,血糖:美国报告 mg/dL;国内 mmol/L
+Creatinine,mg/dL,µmol/L,88.4,血肌酐:美国 mg/dL;国内 µmol/L
+Urea Nitrogen,mg/dL,mmol/L,0.357,尿素氮(BUN);国内报告尿素 mmol/L
+Calcium Total,mg/dL,mmol/L,0.2495,血总钙:美国 mg/dL;国内 mmol/L
+Magnesium,mg/dL,mmol/L,0.4114,血镁:美国 mg/dL;国内 mmol/L
+Phosphate,mg/dL,mmol/L,0.3229,血磷:美国 mg/dL;国内 mmol/L
+Bilirubin Total,mg/dL,µmol/L,17.1,总胆红素:美国 mg/dL;国内 µmol/L
+Bilirubin,Urine,µmol/L,17.1,尿胆红素
+Hemoglobin,g/dL,g/L,10,血红蛋白:美国 g/dL;国内 g/L
+Albumin,g/dL,g/L,10,白蛋白:美国 g/dL;国内 g/L
+Protein Total,g/dL,g/L,10,总蛋白:美国 g/dL;国内 g/L
+Potassium,mEq/L,mmol/L,1,同值异写;国内报告 mmol/L
+Sodium,mEq/L,mmol/L,1,同值异写;国内报告 mmol/L
+Chloride,mEq/L,mmol/L,1,同值异写;国内报告 mmol/L
+Bicarbonate,mEq/L,mmol/L,1,同值异写;国内报告 mmol/L
+Calculated Total CO2,mEq/L,mmol/L,1,同值异写;国内报告 mmol/L
+Base Excess,mEq/L,mmol/L,1,同值异写;国内报告 mmol/L

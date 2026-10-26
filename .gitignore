@@ -1,0 +1,21 @@
+# venv / python
+.venv/
+__pycache__/
+*.py[cod]
+
+# secrets & env
+.env
+*.env
+
+# data(DUA 红线:零原始数据出库)
+data/
+
+# 实验示例输出(由 timeline.py 生成,含派生患者数据,不入库)
+results/examples/
+
+# internal planning
+docs/internal/
+
+# os
+.DS_Store
+Thumbs.db
