@@ -234,7 +234,7 @@ def build_tasks(pool: list[dict], per_type: int, idx: synthea.Index,
             ranked = _abnormal_rank(base, ref)
             if len(ranked) >= 3 and _active_meds(base):
                 out.append({
-                    "task_id": f"T1-{inst['hadm_id'][:8]}", "task_type": "T1",
+                    "task_id": f"T1-{inst['hadm_id']}", "task_type": "T1",
                     "subject_id": inst["subject_id"], "hadm_id": inst["hadm_id"],
                     "prompt": T1_PROMPT, "payload": _visible(base),
                     "answer_key": {
@@ -261,7 +261,7 @@ def build_tasks(pool: list[dict], per_type: int, idx: synthea.Index,
                 continue
             adm = _inject_rx(base, planted)
             out.append({
-                "task_id": f"T2-{inst['hadm_id'][:8]}", "task_type": "T2",
+                "task_id": f"T2-{inst['hadm_id']}", "task_type": "T2",
                 "subject_id": inst["subject_id"], "hadm_id": inst["hadm_id"],
                 "prompt": T2_PROMPT, "payload": _visible(adm),
                 "answer_key": {"conflicts": [{"rule_id": c["rule_id"], "drug": c["drug"],
@@ -277,7 +277,7 @@ def build_tasks(pool: list[dict], per_type: int, idx: synthea.Index,
                 planted = _plant_conflicts(base, rules)[:1]
                 adm = _inject_rx(base, planted)
                 out.append({
-                    "task_id": f"T3-{inst['hadm_id'][:8]}", "task_type": "T3",
+                    "task_id": f"T3-{inst['hadm_id']}", "task_type": "T3",
                     "subject_id": inst["subject_id"], "hadm_id": inst["hadm_id"],
                     "prompt": T3_PROMPT, "payload": _visible(adm),
                     "answer_key": {

@@ -134,6 +134,8 @@ def main() -> None:
     ap.add_argument("--budget", type=float, default=20.0, help="credit 上限,超过即停")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--rescore", type=Path, help="只对既有结果重判分")
+    ap.add_argument("--append", action="store_true",
+                    help="追加到既有结果文件(分任务类型分批跑时用),并按 task_id 去重")
     args = ap.parse_args()
 
     if args.rescore:
@@ -183,9 +185,20 @@ def main() -> None:
             print(f"  {rec['task_id']} score={rec['metrics']['score']:.3f} "
                   f"credit={rec.get('credit', 0):.3f} 累计={spent:.2f}")
 
+    # 先读旧结果再打开写(顺序反了会把文件截断成空)
+    merged: dict[str, dict] = {}
+    if args.append and out_path.exists():
+        for line in out_path.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                old = json.loads(line)
+                merged[old["task_id"]] = old
+    for r in records:
+        merged[r["task_id"]] = r
+    order = {t["task_id"]: i for i, t in enumerate(all_tasks)}
     with open(out_path, "w", encoding="utf-8") as f:
-        for r in records:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+        for tid in sorted(merged, key=lambda x: order.get(x, 10 ** 6)):
+            f.write(json.dumps(merged[tid], ensure_ascii=False) + "\n")
+    records = list(merged.values())
 
     summary = summarize(records)
     summary["model"] = args.model
