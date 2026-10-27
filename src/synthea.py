@@ -119,6 +119,14 @@ def build_timeline(csv_dir: Path, patient_id: str, index: Index | None = None) -
     birthdate = _ts(pat["BIRTHDATE"])
     anchor_age = datetime.fromisoformat(birthdate).year if birthdate else None
 
+    # 参考区间必须**出现在给 agent 看的数据里**,否则"最异常化验""需复查项目"这类任务
+    # 就成了对着隐藏评分表答题。真实报告单也自带参考区间,补上才符合临床场景。
+    try:
+        import localization as _loc
+        ref = _loc.load_loinc_ref()
+    except Exception:      # 缺表时退化为无参考区间(旧行为),不阻塞时间线构建
+        ref = {}
+
     encs = idx.encounters.get(patient_id, [])
     obs = idx.obs.get(patient_id, [])
     meds = idx.meds.get(patient_id, [])
@@ -133,13 +141,24 @@ def build_timeline(csv_dir: Path, patient_id: str, index: Index | None = None) -
         adm_year = int(enc_start[:4]) if enc_start else 0
 
         # 按 ENCOUNTER 外键直连,不用时间窗——时间窗会把门诊化验误记到住院里
-        lab_events = [{
-            "time": _ts(o["DATE"]), "category": "lab", "itemid": o["CODE"],
-            "label": o["DESCRIPTION"].split(" [")[0], "fluid": _fluid_of(o["DESCRIPTION"]),
-            "lab_category": o["CATEGORY"], "value": o["VALUE"], "valuenum": _num(o["VALUE"]),
-            "valueuom": o.get("UNITS") or None, "ref_range_lower": None,
-            "ref_range_upper": None, "flag": None, "priority": None,
-        } for o in obs if o.get("ENCOUNTER") == enc_id]
+        lab_events = []
+        for o in obs:
+            if o.get("ENCOUNTER") != enc_id:
+                continue
+            r = ref.get(o["CODE"]) or {}
+            value = _num(o["VALUE"])
+            lo, hi = r.get("ref_low"), r.get("ref_high")
+            abnormal = (value is not None and lo is not None and hi is not None
+                        and (value < lo or value > hi))
+            lab_events.append({
+                "time": _ts(o["DATE"]), "category": "lab", "itemid": o["CODE"],
+                "label": o["DESCRIPTION"].split(" [")[0], "fluid": _fluid_of(o["DESCRIPTION"]),
+                "lab_category": o["CATEGORY"], "value": o["VALUE"], "valuenum": value,
+                "valueuom": o.get("UNITS") or None,
+                "ref_range_lower": lo, "ref_range_upper": hi,
+                "flag": "abnormal" if abnormal else None, "priority": None,
+                "label_zh": r.get("label_zh"),
+            })
 
         rx_events = [{
             "time": _ts(m["START"]), "category": "prescription",

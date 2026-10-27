@@ -58,6 +58,22 @@ def _lab_events(payload: dict) -> list[dict]:
     return [e for e in payload.get("events", []) if e.get("category") == "lab"]
 
 
+def _key_labels(critical: list[str] | None) -> set[str]:
+    """任务答案键依赖的检验项。故障必须打在这些项上才算"与任务相关"——
+    否则注入到任务根本不看的化验上,效应为 0 是设计问题而非模型鲁棒。"""
+    return {str(x).lower() for x in (critical or [])}
+
+
+def _pick_targets(labs: list[dict], critical: list[str] | None) -> list[dict]:
+    """优先挑答案键依赖的检验项;没有则退回全量关键化验。"""
+    keys = _key_labels(critical)
+    if keys:
+        hit = [e for e in labs if str(e.get("label", "")).lower() in keys]
+        if hit:
+            return hit
+    return [e for e in labs if e.get("label") in CRITICAL_LABS]
+
+
 def _shift_time(ts: str, days: float) -> str:
     from datetime import datetime, timedelta
     dt = datetime.fromisoformat(ts)
@@ -66,10 +82,11 @@ def _shift_time(ts: str, days: float) -> str:
 
 # ---------------------------------------------------------------- 各类故障
 
-def f1_drop_critical(payload: dict, severity: str, seed: str) -> tuple[dict, dict]:
+def f1_drop_critical(payload: dict, severity: str, seed: str,
+                     critical: list[str] | None = None) -> tuple[dict, dict]:
     """F1 关键化验置空:数值与单位一起抹掉,行还在(看起来像"没测出结果")。"""
     p = copy.deepcopy(payload)
-    labs = [e for e in _lab_events(p) if e.get("label") in CRITICAL_LABS]
+    labs = _pick_targets(_lab_events(p), critical)
     if not labs:
         return p, {"applied": False, "reason": "无关键化验"}
     labs.sort(key=lambda e: (e.get("time") or ""))
@@ -84,7 +101,8 @@ def f1_drop_critical(payload: dict, severity: str, seed: str) -> tuple[dict, dic
                "labels": sorted({e["label"] for e in targets})}
 
 
-def f2_unit_error(payload: dict, severity: str, seed: str) -> tuple[dict, dict]:
+def f2_unit_error(payload: dict, severity: str, seed: str,
+                  critical: list[str] | None = None) -> tuple[dict, dict]:
     """F2 单位错误:数值按另一单位制换算,但单位标签保持原样。
 
     这是真实的数据集成错误(mg/dL 值被当 mmol/L 用),不是随机扰动:
@@ -92,9 +110,12 @@ def f2_unit_error(payload: dict, severity: str, seed: str) -> tuple[dict, dict]:
     """
     p = copy.deepcopy(payload)
     candidates = []
+    keys = _key_labels(critical)
     for e in _lab_events(p):
         if e.get("valuenum") is None or not e.get("valueuom"):
             continue
+        if keys and str(e.get("label", "")).lower() not in keys:
+            continue        # 只打答案键依赖的项,否则模型不看它也照样对
         for _label, factor in UNIT_SWAP[("mg/dL", "mg/dL→mmol/L")]:
             if e["label"].startswith(_label):
                 candidates.append((e, factor))
@@ -152,14 +173,14 @@ def f3_contradiction(payload: dict, severity: str, seed: str) -> tuple[dict, dic
                           "condition": c["condition_contains"]} for c in planted]}
 
 
-def f4_stale_data(payload: dict, severity: str, seed: str) -> tuple[dict, dict]:
+def f4_stale_data(payload: dict, severity: str, seed: str,
+                  critical: list[str] | None = None) -> tuple[dict, dict]:
     """F4 陈旧数据:关键化验的时间戳被前移(mild 2 天 / severe 7 天),数值保持当时的值。
 
     效果:agent 看到的是"几天前的化验",却要用来做当前的临床判断。
     """
     p = copy.deepcopy(payload)
-    labs = [e for e in _lab_events(p)
-            if e.get("label") in CRITICAL_LABS and e.get("time")]
+    labs = [e for e in _pick_targets(_lab_events(p), critical) if e.get("time")]
     if not labs:
         return p, {"applied": False, "reason": "无关键化验"}
     labs.sort(key=lambda e: e["time"])
@@ -173,12 +194,23 @@ def f4_stale_data(payload: dict, severity: str, seed: str) -> tuple[dict, dict]:
                "labels": sorted({e["label"] for e in targets})}
 
 
-def f5_tool_truncation(payload: dict, severity: str, seed: str) -> tuple[dict, dict]:
-    """F5 工具截断:化验列表被截到前 N 条(时间靠后的、往往最关键的被切掉)。"""
+def f5_tool_truncation(payload: dict, severity: str, seed: str,
+                       critical: list[str] | None = None) -> tuple[dict, dict]:
+    """F5 工具截断:化验接口只返回前 N 条(时间靠后的、往往最关键的被切掉)。
+
+    截断必须**切到答案键依赖的检验项**,否则模型拿到的信息完好,效应自然为 0。
+    实现:按时间排序后保留前面一段,并确保目标项落在被切掉的尾部。
+    """
     p = copy.deepcopy(payload)
     labs = sorted([e for e in _lab_events(p) if e.get("time")], key=lambda e: e["time"])
     if len(labs) <= 3:
         return p, {"applied": False, "reason": "化验太少"}
+    keys = _key_labels(critical)
+    if keys:
+        # 目标项挪到最尾部,保证被截断掉
+        target = [e for e in labs if str(e.get("label", "")).lower() in keys]
+        rest = [e for e in labs if str(e.get("label", "")).lower() not in keys]
+        labs = rest + target
     keep = max(3, int(len(labs) * (0.7 if severity == "mild" else 0.3)))
     kept = {id(e) for e in labs[:keep]}
     dropped = [e for e in labs[keep:]]
@@ -245,9 +277,13 @@ FAULTS = {
 }
 
 
-def inject(payload: dict, spec: dict, donor_labs: list[dict] | None = None
-           ) -> tuple[dict, dict]:
-    """按 spec 注入故障。spec = {"fault": "F2", "severity": "mild"}。"""
+def inject(payload: dict, spec: dict, donor_labs: list[dict] | None = None,
+           critical: list[str] | None = None) -> tuple[dict, dict]:
+    """按 spec 注入故障。spec = {"fault": "F2", "severity": "mild"}。
+
+    critical:该任务答案键依赖的检验项名;传了就只打这些项(否则注入到模型根本不看的
+    化验上,效应为 0 只是设计缺陷,不是模型鲁棒)。
+    """
     fault, severity = spec["fault"], spec["severity"]
     if fault not in FAULTS:
         raise ValueError(f"未知故障类型 {fault}")
@@ -257,6 +293,8 @@ def inject(payload: dict, spec: dict, donor_labs: list[dict] | None = None
     seed = spec.get("seed", "")
     if fault == "F6":
         out, rec = fn(payload, severity, seed, donor_labs)
+    elif fault in ("F1", "F2", "F4", "F5"):
+        out, rec = fn(payload, severity, seed, critical)
     else:
         out, rec = fn(payload, severity, seed)
     rec.update({"fault": fault, "severity": severity,

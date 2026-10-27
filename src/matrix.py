@@ -71,6 +71,17 @@ def targeted_flag(task: dict, answer: dict, fault_record: dict) -> float:
     return 1.0 if any(t and t in text for t in targets) else 0.0
 
 
+def critical_labels(task: dict) -> list[str]:
+    """该任务答案键依赖的检验项英文名(注入只打这些项,保证故障与任务相关)。"""
+    key = task["answer_key"]
+    labs = key.get("top5_abnormal_labs") or key.get("top3_abnormal_labs") or []
+    if task["task_type"] == "T1":
+        return [x["label"] if isinstance(x, dict) else x for x in labs]
+    if task["task_type"] == "T3":
+        return list(key.get("recheck_labs") or [])
+    return []           # T2 判的是医嘱冲突,与化验无关
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="故障矩阵跑批")
     ap.add_argument("--model", default="deepseek-v4.1-flash")
@@ -120,7 +131,8 @@ def main() -> None:
             for t in chosen:
                 corrupted, rec = fault_lib.inject(
                     t["payload"], {"fault": fault, "severity": severity,
-                                   "seed": t["task_id"]}, donor)
+                                   "seed": t["task_id"]}, donor,
+                    critical=critical_labels(t))
                 if not rec["applied"]:
                     continue
                 jobs.append((t, fault, severity, corrupted, rec))
