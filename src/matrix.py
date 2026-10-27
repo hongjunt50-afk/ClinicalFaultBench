@@ -40,6 +40,37 @@ def recompute_key(task: dict, corrupted: dict) -> dict:
     return json.loads(json.dumps(task["answer_key"]))
 
 
+def targeted_flag(task: dict, answer: dict, fault_record: dict) -> float:
+    """告警是否**指向被注入的那一项**——而不是"有没有随便说点什么"。
+
+    实测发现:模型在干净数据上也会报告"检验值异常跳变/疑似重复数据"之类
+    (假告警率 100%),所以二元"有没有告警"不能区分故障。这里要求告警文本里
+    出现被注入故障影响的检验项/药名才算命中。
+    """
+    if not isinstance(answer, dict):
+        return 0.0
+    issues = answer.get("data_issues")
+    if not issues:
+        return 0.0
+    text = json.dumps(issues, ensure_ascii=False).lower()
+    targets = set()
+    for key in ("labels", "dropped_tail_labels"):
+        for x in fault_record.get(key) or []:
+            targets.add(str(x).lower())
+    for c in fault_record.get("changes") or []:
+        if c.get("label"):
+            targets.add(str(c["label"]).lower())
+    for c in fault_record.get("injected") or []:
+        if c.get("label"):
+            targets.add(str(c["label"]).lower())
+    for c in fault_record.get("rules") or []:
+        if c.get("drug"):
+            targets.add(str(c["drug"]).lower())
+    if not targets:
+        return 0.0
+    return 1.0 if any(t and t in text for t in targets) else 0.0
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="故障矩阵跑批")
     ap.add_argument("--model", default="deepseek-v4.1-flash")
@@ -109,10 +140,14 @@ def main() -> None:
                 r = fut[1].result()
                 r["_task"] = {**t, "answer_key": fut[2]}
                 r.update({"fault": fault, "severity": severity, "fault_record": rec})
+                # 定向告警:是否点名了被注入的那一项(区分"真识别"与"泛泛而谈")
+                r["metrics"]["targeted_flag"] = targeted_flag(t, r.get("parsed"), rec)
                 results.append(r)
                 spent += r.get("credit", 0)
-                print(f"  {t['task_id']:16s} {fault}/{severity:6s} "
-                      f"score={r['metrics']['score']:.3f} credit={r.get('credit', 0):.3f}")
+                print(f"  {t['task_id'][:20]:20s} {fault}/{severity:6s} "
+                      f"score={r['metrics']['score']:.3f} "
+                      f"targeted={r['metrics']['targeted_flag']:.0f} "
+                      f"credit={r.get('credit', 0):.3f}")
 
         for t, fault, severity, corrupted, rec in jobs:
             if spent >= args.budget:
@@ -142,7 +177,7 @@ def summarize(records: list[dict], clean: dict[str, float], model: str) -> None:
     for r in records:
         by[r["fault"]][r["severity"]].append(
             (clean.get(r["task_id"]), r["metrics"]["score"], r["task_type"],
-             r["metrics"].get("flagged")))
+             r["metrics"].get("targeted_flag", r["metrics"].get("flagged"))))
     print(f"\n{model} 故障效应(配对差值 = 干净分 - 故障分,正值表示性能下降)")
     header = f"{'故障':<8}{'mild n':>8}{'mild 分':>9}{'mild 降':>9}{'mild 告警':>10}" \
              f"{'sev n':>8}{'sev 分':>9}{'sev 降':>9}{'sev 告警':>10}"
@@ -170,7 +205,7 @@ def summarize(records: list[dict], clean: dict[str, float], model: str) -> None:
     out = RESULTS_DIR / f"matrix_summary_{model}.json"
     out.write_text(json.dumps(table, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"汇总 → {out}")
-    print("注:告警率=模型主动指出'数据有问题'的比例(T1)。干净基线告警率可作为假阳校准。")
+    print("注:告警率=模型主动点名被注入项的比例(定向)。干净基线上该值为假阳基线。")
 
 
 if __name__ == "__main__":

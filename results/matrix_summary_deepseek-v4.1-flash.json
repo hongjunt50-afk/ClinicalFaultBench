@@ -1,86 +1,100 @@
 {
   "F1": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.7963,
-      "paired_drop": 0.037
+      "n": 6,
+      "mean_score": 0.7474,
+      "paired_drop": -0.0463,
+      "flag_rate": 1.0
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.6852,
-      "paired_drop": 0.1482
+      "n": 6,
+      "mean_score": 0.6825,
+      "paired_drop": 0.0185,
+      "flag_rate": 1.0
     }
   },
   "F2": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.4074,
-      "paired_drop": 0.426
+      "n": 6,
+      "mean_score": 0.7011,
+      "paired_drop": 0.0,
+      "flag_rate": 1.0
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.7963,
-      "paired_drop": 0.037
+      "n": 6,
+      "mean_score": 0.7011,
+      "paired_drop": 0.0,
+      "flag_rate": 1.0
     }
   },
   "F3": {
     "mild": {
-      "n": 2,
-      "mean_score": 0.5834,
-      "paired_drop": 0.1667
+      "n": 5,
+      "mean_score": 0.5528,
+      "paired_drop": 0.0885,
+      "flag_rate": 1.0
     },
     "severe": {
-      "n": 2,
-      "mean_score": 0.4722,
-      "paired_drop": 0.2778
+      "n": 5,
+      "mean_score": 0.5778,
+      "paired_drop": 0.0635,
+      "flag_rate": 1.0
     }
   },
   "F4": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.8334,
-      "paired_drop": 0.0
+      "n": 6,
+      "mean_score": 0.7566,
+      "paired_drop": -0.0556,
+      "flag_rate": 1.0
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.8334,
-      "paired_drop": 0.0
+      "n": 6,
+      "mean_score": 0.7566,
+      "paired_drop": -0.0556,
+      "flag_rate": 1.0
     }
   },
   "F5": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.7963,
-      "paired_drop": 0.037
+      "n": 6,
+      "mean_score": 0.6733,
+      "paired_drop": 0.0278,
+      "flag_rate": 1.0
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.8408,
-      "paired_drop": -0.0074
+      "n": 6,
+      "mean_score": 0.7011,
+      "paired_drop": 0.0,
+      "flag_rate": 1.0
     }
   },
   "F6": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.8334,
-      "paired_drop": 0.0
+      "n": 6,
+      "mean_score": 0.6548,
+      "paired_drop": 0.0463,
+      "flag_rate": 1.0
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.8334,
-      "paired_drop": 0.0
+      "n": 6,
+      "mean_score": 0.7196,
+      "paired_drop": -0.0185,
+      "flag_rate": 1.0
     }
   },
   "F7": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.8334,
-      "paired_drop": 0.0
+      "n": 6,
+      "mean_score": 0.7196,
+      "paired_drop": -0.0185,
+      "flag_rate": 1.0
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.8334,
-      "paired_drop": 0.0
+      "n": 6,
+      "mean_score": 0.5807,
+      "paired_drop": 0.1204,
+      "flag_rate": 1.0
     }
   }
 }
