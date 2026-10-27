@@ -1,0 +1,86 @@
+{
+  "F1": {
+    "mild": {
+      "n": 3,
+      "mean_score": 0.7963,
+      "paired_drop": 0.037
+    },
+    "severe": {
+      "n": 3,
+      "mean_score": 0.6852,
+      "paired_drop": 0.1482
+    }
+  },
+  "F2": {
+    "mild": {
+      "n": 3,
+      "mean_score": 0.4074,
+      "paired_drop": 0.426
+    },
+    "severe": {
+      "n": 3,
+      "mean_score": 0.7963,
+      "paired_drop": 0.037
+    }
+  },
+  "F3": {
+    "mild": {
+      "n": 2,
+      "mean_score": 0.5834,
+      "paired_drop": 0.1667
+    },
+    "severe": {
+      "n": 2,
+      "mean_score": 0.4722,
+      "paired_drop": 0.2778
+    }
+  },
+  "F4": {
+    "mild": {
+      "n": 3,
+      "mean_score": 0.8334,
+      "paired_drop": 0.0
+    },
+    "severe": {
+      "n": 3,
+      "mean_score": 0.8334,
+      "paired_drop": 0.0
+    }
+  },
+  "F5": {
+    "mild": {
+      "n": 3,
+      "mean_score": 0.7963,
+      "paired_drop": 0.037
+    },
+    "severe": {
+      "n": 3,
+      "mean_score": 0.8408,
+      "paired_drop": -0.0074
+    }
+  },
+  "F6": {
+    "mild": {
+      "n": 3,
+      "mean_score": 0.8334,
+      "paired_drop": 0.0
+    },
+    "severe": {
+      "n": 3,
+      "mean_score": 0.8334,
+      "paired_drop": 0.0
+    }
+  },
+  "F7": {
+    "mild": {
+      "n": 3,
+      "mean_score": 0.8334,
+      "paired_drop": 0.0
+    },
+    "severe": {
+      "n": 3,
+      "mean_score": 0.8334,
+      "paired_drop": 0.0
+    }
+  }
+}

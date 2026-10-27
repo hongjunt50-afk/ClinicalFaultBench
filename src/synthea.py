@@ -88,7 +88,9 @@ class Index:
                 raise FileNotFoundError(f"缺文件 {csv_dir / name}")
         self.patients = {r["Id"]: r for r in _rows(csv_dir, "patients.csv")}
         self.encounters: dict[str, list[dict]] = {}
+        self.raw_encounters: dict[str, list[dict]] = {}   # 含门诊,随访间隔判分要用
         for e in _rows(csv_dir, "encounters.csv"):
+            self.raw_encounters.setdefault(e["PATIENT"], []).append(e)
             if e["ENCOUNTERCLASS"] == "inpatient":
                 self.encounters.setdefault(e["PATIENT"], []).append(e)
         for group in self.encounters.values():

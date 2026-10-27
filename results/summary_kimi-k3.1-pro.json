@@ -1,0 +1,23 @@
+{
+  "n": 6,
+  "credit": 84.41,
+  "by_type": {
+    "T1": {
+      "n": 2,
+      "mean_score": 0.7976
+    },
+    "T2": {
+      "n": 2,
+      "mean_score": 0.5
+    },
+    "T3": {
+      "n": 2,
+      "mean_score": 0.3889
+    }
+  },
+  "overall": 0.5622,
+  "errors": 0,
+  "parse_failures": 0,
+  "model": "kimi-k3.1-pro",
+  "elapsed_s": 141.2
+}
