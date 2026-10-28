@@ -100,6 +100,7 @@ def run_one(base_url: str, api_key: str, model: str, task: dict,
                                                                               "parse_error": True}
             return {"task_id": task["task_id"], "task_type": task["task_type"],
                     "model": model, "credit": credit, "raw": text[:4000],
+                    "payload_sig": task_lib.task_sig(task),
                     "parsed": parsed, "metrics": metrics}
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
             last_err = str(exc)
@@ -136,6 +137,8 @@ def main() -> None:
     ap.add_argument("--rescore", type=Path, help="只对既有结果重判分")
     ap.add_argument("--append", action="store_true",
                     help="追加到既有结果文件(分任务类型分批跑时用),并按 task_id 去重")
+    ap.add_argument("--faults", default="",
+                    help="(兼容 matrix 日志口径)只跑指定故障,此处忽略")
     args = ap.parse_args()
 
     if args.rescore:
@@ -152,11 +155,26 @@ def main() -> None:
     all_tasks = [json.loads(x) for x in TASKS_PATH.read_text(encoding="utf-8").splitlines()]
     if args.task_type:
         all_tasks = [t for t in all_tasks if t["task_type"] == args.task_type]
+    # 任务集重建(规则表/答案键修订)后,旧结果里 payload 已变的记录作废;
+    # 只跑"结果文件里没有 id"或"payload 对不上"的任务,已跑过的绝不重花一次钱
+    out_path = RESULTS_DIR / f"baseline_{args.model}.jsonl"
+    done_payload: dict[str, str] = {}
+    if args.append and out_path.exists():
+        for line in out_path.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                r = json.loads(line)
+                done_payload[r["task_id"]] = r.get("payload_sig", "")
+    if done_payload:
+        stale = [t["task_id"] for t in all_tasks if t["task_id"] in done_payload
+                 and done_payload[t["task_id"]] != task_lib.task_sig(t)]
+        all_tasks = [t for t in all_tasks if t["task_id"] not in done_payload
+                     or done_payload[t["task_id"]] != task_lib.task_sig(t)]
+        print(f"已有 {len(done_payload)} 条,其中 prompt/payload 已变需重跑 {len(stale)} 个;"
+              f"本次待跑 {len(all_tasks)} 个")
     if args.limit:
         all_tasks = all_tasks[:args.limit]
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = RESULTS_DIR / f"baseline_{args.model}.jsonl"
     records: list[dict] = []
     spent = 0.0
     started = time.time()

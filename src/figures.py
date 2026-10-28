@@ -47,7 +47,11 @@ def load(model: str) -> tuple[dict, dict, dict]:
     for line in (RESULTS / f"matrix_{model}.jsonl").read_text(encoding="utf-8").splitlines():
         r = json.loads(line)
         t = tasks[r["task_id"]]
-        m = task_lib.score(t, r.get("parsed")) if r.get("parsed") else {"score": 0.0}
+        # 矩阵记录自带 _task.answer_key:那是**运行当时**的答案键(F3 的注入项已并入)。
+        # 拿现在的 tasks.jsonl 重判会把 F3 的注入项判成假阳性——出图和 rescore.py 必须同口径。
+        task_for_score = r.get("_task") or t
+        m = r.get("metrics") or (
+            task_lib.score(task_for_score, r.get("parsed")) if r.get("parsed") else {"score": 0.0})
         faulted.append({"task_id": r["task_id"], "task_type": t["task_type"],
                         "fault": r["fault"], "severity": r["severity"],
                         "score": m["score"], "clean": clean.get(r["task_id"])})

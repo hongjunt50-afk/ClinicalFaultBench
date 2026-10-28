@@ -1,0 +1,116 @@
+已有结果 48 条,分次跑模式:只补缺口
+待跑 92 次调用(任务 90 × 故障 7 × 严重度 2,扣除已完成与不适用组合)
+  T1-d1d1932f-bbf3-d84 F1/mild   score=0.833 targeted=1 credit=0.640
+  T3-d1d1932f-bbf3-d84 F1/mild   score=0.933 targeted=0 credit=1.090
+  T1-4d6e9143-aca1-c1c F1/mild   score=0.833 targeted=1 credit=1.610
+  T3-4d6e9143-aca1-c1c F1/mild   score=0.889 targeted=0 credit=1.590
+  T1-2a945473-f291-5f6 F1/mild   score=0.833 targeted=1 credit=1.160
+  T3-2a945473-f291-5f6 F1/mild   score=0.933 targeted=0 credit=1.410
+  T1-d1d1932f-bbf3-d84 F1/severe score=0.500 targeted=1 credit=1.150
+  T3-d1d1932f-bbf3-d84 F1/severe score=0.933 targeted=0 credit=0.820
+  T1-4d6e9143-aca1-c1c F1/severe score=0.667 targeted=1 credit=1.690
+  T3-4d6e9143-aca1-c1c F1/severe score=0.889 targeted=0 credit=1.330
+  T1-2a945473-f291-5f6 F1/severe score=0.833 targeted=1 credit=0.990
+  T3-2a945473-f291-5f6 F1/severe score=1.000 targeted=0 credit=1.420
+  T1-d1d1932f-bbf3-d84 F2/mild   score=0.833 targeted=1 credit=1.410
+  T1-4d6e9143-aca1-c1c F2/mild   score=0.833 targeted=1 credit=1.600
+  T1-2a945473-f291-5f6 F2/mild   score=1.000 targeted=1 credit=1.390
+  T1-95b08680-5056-51b F2/mild   score=0.833 targeted=1 credit=0.950
+  T3-95b08680-5056-51b F2/mild   score=1.000 targeted=0 credit=0.920
+  T1-0f4f5baa-aa68-73c F2/mild   score=1.000 targeted=0 credit=0.590
+  T1-d1d1932f-bbf3-d84 F2/severe score=0.833 targeted=1 credit=1.120
+  T1-4d6e9143-aca1-c1c F2/severe score=0.833 targeted=1 credit=2.450
+  T1-2a945473-f291-5f6 F2/severe score=0.833 targeted=1 credit=1.000
+  T1-95b08680-5056-51b F2/severe score=0.833 targeted=1 credit=0.810
+  T3-95b08680-5056-51b F2/severe score=1.000 targeted=0 credit=0.710
+  T1-0f4f5baa-aa68-73c F2/severe score=0.833 targeted=1 credit=0.800
+  T2-d1d1932f-bbf3-d84 F3/mild   score=1.000 targeted=1 credit=0.770
+  T3-d1d1932f-bbf3-d84 F3/mild   score=1.000 targeted=1 credit=0.800
+  T2-2a945473-f291-5f6 F3/mild   score=1.000 targeted=1 credit=1.190
+  T3-2a945473-f291-5f6 F3/mild   score=1.000 targeted=1 credit=1.220
+  T2-d6817060-39d3-2dd F3/mild   score=1.000 targeted=1 credit=1.670
+  T3-d6817060-39d3-2dd F3/mild   score=1.000 targeted=1 credit=2.250
+  T2-5c0e81b3-a445-5e3 F3/mild   score=1.000 targeted=1 credit=0.890
+  T3-5c0e81b3-a445-5e3 F3/mild   score=1.000 targeted=1 credit=0.720
+  T2-a3a2d7a6-1252-73a F3/mild   score=1.000 targeted=1 credit=1.990
+  T3-a3a2d7a6-1252-73a F3/mild   score=0.889 targeted=1 credit=2.660
+  T2-d1d1932f-bbf3-d84 F3/severe score=1.000 targeted=1 credit=1.160
+  T3-d1d1932f-bbf3-d84 F3/severe score=1.000 targeted=1 credit=0.750
+  T2-2a945473-f291-5f6 F3/severe score=1.000 targeted=1 credit=1.000
+  T3-2a945473-f291-5f6 F3/severe score=1.000 targeted=1 credit=0.980
+  T2-d6817060-39d3-2dd F3/severe score=1.000 targeted=1 credit=2.170
+  T3-d6817060-39d3-2dd F3/severe score=0.889 targeted=1 credit=2.140
+  T2-5c0e81b3-a445-5e3 F3/severe score=1.000 targeted=1 credit=0.960
+  T3-5c0e81b3-a445-5e3 F3/severe score=1.000 targeted=1 credit=1.230
+  T2-a3a2d7a6-1252-73a F3/severe score=1.000 targeted=1 credit=1.910
+  T3-a3a2d7a6-1252-73a F3/severe score=0.889 targeted=1 credit=2.580
+  T1-d1d1932f-bbf3-d84 F4/mild   score=0.833 targeted=0 credit=1.040
+  T3-d1d1932f-bbf3-d84 F4/mild   score=0.933 targeted=0 credit=0.940
+  T1-4d6e9143-aca1-c1c F4/mild   score=1.000 targeted=0 credit=1.600
+  T3-4d6e9143-aca1-c1c F4/mild   score=0.889 targeted=0 credit=1.460
+  T1-2a945473-f291-5f6 F4/mild   score=0.833 targeted=0 credit=0.940
+  T3-2a945473-f291-5f6 F4/mild   score=0.933 targeted=0 credit=1.100
+  T1-d1d1932f-bbf3-d84 F4/severe score=0.833 targeted=1 credit=1.470
+  T3-d1d1932f-bbf3-d84 F4/severe score=0.933 targeted=0 credit=0.800
+  T1-4d6e9143-aca1-c1c F4/severe score=0.833 targeted=1 credit=1.230
+  T3-4d6e9143-aca1-c1c F4/severe score=0.889 targeted=0 credit=1.570
+  T1-2a945473-f291-5f6 F4/severe score=1.000 targeted=1 credit=1.500
+  T3-2a945473-f291-5f6 F4/severe score=1.000 targeted=0 credit=1.310
+  T1-d1d1932f-bbf3-d84 F5/mild   score=0.500 targeted=0 credit=0.610
+  T3-d1d1932f-bbf3-d84 F5/mild   score=0.667 targeted=0 credit=0.710
+  T1-4d6e9143-aca1-c1c F5/mild   score=0.500 targeted=1 credit=1.780
+  T3-4d6e9143-aca1-c1c F5/mild   score=0.667 targeted=0 credit=0.960
+  T1-2a945473-f291-5f6 F5/mild   score=0.500 targeted=1 credit=1.320
+  T3-2a945473-f291-5f6 F5/mild   score=0.667 targeted=0 credit=0.840
+  T1-d1d1932f-bbf3-d84 F5/severe score=0.500 targeted=0 credit=0.400
+  T3-d1d1932f-bbf3-d84 F5/severe score=0.667 targeted=0 credit=0.320
+  T1-4d6e9143-aca1-c1c F5/severe score=0.500 targeted=1 credit=1.390
+  T3-4d6e9143-aca1-c1c F5/severe score=0.667 targeted=0 credit=0.370
+  T1-2a945473-f291-5f6 F5/severe score=0.500 targeted=1 credit=1.320
+  T3-2a945473-f291-5f6 F5/severe score=0.667 targeted=0 credit=0.910
+  T1-d1d1932f-bbf3-d84 F6/mild   score=0.833 targeted=1 credit=0.660
+  T3-d1d1932f-bbf3-d84 F6/mild   score=0.933 targeted=0 credit=0.790
+  T1-4d6e9143-aca1-c1c F6/mild   score=0.833 targeted=1 credit=1.410
+  T3-4d6e9143-aca1-c1c F6/mild   score=0.889 targeted=0 credit=1.330
+  T1-2a945473-f291-5f6 F6/mild   score=1.000 targeted=1 credit=0.640
+  T3-2a945473-f291-5f6 F6/mild   score=1.000 targeted=0 credit=1.130
+  T1-d1d1932f-bbf3-d84 F6/severe score=0.833 targeted=1 credit=0.900
+  T3-d1d1932f-bbf3-d84 F6/severe score=0.667 targeted=0 credit=0.610
+  T1-4d6e9143-aca1-c1c F6/severe score=0.833 targeted=1 credit=0.590
+  T3-4d6e9143-aca1-c1c F6/severe score=0.889 targeted=0 credit=1.000
+  T1-2a945473-f291-5f6 F6/severe score=1.000 targeted=1 credit=0.980
+  T3-2a945473-f291-5f6 F6/severe score=1.000 targeted=0 credit=1.080
+  T1-d1d1932f-bbf3-d84 F7/mild   score=0.833 targeted=1 credit=0.950
+  T3-d1d1932f-bbf3-d84 F7/mild   score=1.000 targeted=0 credit=0.930
+  T1-4d6e9143-aca1-c1c F7/mild   score=0.833 targeted=1 credit=1.440
+  T3-4d6e9143-aca1-c1c F7/mild   score=0.889 targeted=0 credit=1.310
+  T1-2a945473-f291-5f6 F7/mild   score=0.833 targeted=1 credit=1.550
+  T3-2a945473-f291-5f6 F7/mild   score=0.889 targeted=0 credit=1.450
+  T1-d1d1932f-bbf3-d84 F7/severe score=0.833 targeted=1 credit=0.940
+  T3-d1d1932f-bbf3-d84 F7/severe score=0.933 targeted=0 credit=1.510
+  T1-4d6e9143-aca1-c1c F7/severe score=0.833 targeted=1 credit=1.480
+  T3-4d6e9143-aca1-c1c F7/severe score=1.000 targeted=0 credit=2.480
+  T1-2a945473-f291-5f6 F7/severe score=1.000 targeted=1 credit=1.180
+  T3-2a945473-f291-5f6 F7/severe score=0.778 targeted=0 credit=1.620
+
+deepseek-v4.1-flash 故障效应(配对差值 = 干净分 - 故障分,正值表示性能下降)
+故障        mild n   mild 分   mild 降   mild 告警   sev n    sev 分    sev 降    sev 告警
+F1            10    0.847    0.091      0.40      10    0.753    0.184      0.50
+F2            10    0.910    0.017      0.60      10    0.877    0.050      0.70
+F3            10    0.989   -0.022      1.00      10    0.978   -0.011      1.00
+F4            10    0.880    0.058      0.10      10    0.876    0.062      0.50
+F5            10    0.521    0.417      0.40      10    0.538    0.400      0.20
+F6            10    0.887    0.051      0.50      10    0.843    0.095      0.50
+F7            10    0.849    0.089      0.40      10    0.859    0.079      0.30
+
+按任务类型拆解(配对下降):
+  F1  mild T1:+0.100(n=5)/T3:+0.082(n=5)  severe T1:+0.233(n=5)/T3:+0.136(n=5)
+  F2  mild T1:+0.024(n=7)/T3:+0.000(n=3)  severe T1:+0.071(n=7)/T3:+0.000(n=3)
+  F3  mild T2:+0.000(n=5)/T3:-0.044(n=5)  severe T2:+0.000(n=5)/T3:-0.022(n=5)
+  F4  mild T1:+0.067(n=5)/T3:+0.049(n=5)  severe T1:+0.033(n=5)/T3:+0.091(n=5)
+  F5  mild T1:+0.433(n=5)/T3:+0.400(n=5)  severe T1:+0.433(n=5)/T3:+0.367(n=5)
+  F6  mild T1:+0.067(n=5)/T3:+0.036(n=5)  severe T1:+0.033(n=5)/T3:+0.156(n=5)
+  F7  mild T1:+0.100(n=5)/T3:+0.078(n=5)  severe T1:+0.100(n=5)/T3:+0.058(n=5)
+汇总 → results\matrix_summary_deepseek-v4.1-flash.json
+注:告警率=模型主动点名被注入项的比例(定向)。干净基线上该值为假阳基线。
+明细 → results\matrix_deepseek-v4.1-flash.jsonl(本次 92 条,累计 140 条)

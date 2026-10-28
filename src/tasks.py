@@ -64,23 +64,49 @@ def load_rules() -> list[dict]:
 
 # ---------------------------------------------------------------- 答案键构造
 
-def _abnormal_rank(admission: dict, ref: dict) -> list[dict]:
+def _ref_of(entry: dict, ref) -> dict:
+    """取该化验行对应的参考区间。
+
+    **优先用数据行自带的 ref_range_lower/upper**:那是模型眼睛看得到的区间,答案键必须与
+    可见事实同源,否则就是"对着隐藏评分表答题"。行上没有时才回退查表,且按 (码, 单位)
+    精确匹配——同码不同单位量纲可能差 40 倍(实测 RDW 的 %/fL、肌钙蛋白的 pg/mL vs ng/L),
+    只按码查会把整类化验判成异常,答案键里全是这类伪异常。
+    """
+    lo, hi = entry.get("ref_range_lower"), entry.get("ref_range_upper")
+    if lo is not None and hi is not None:
+        table = _ref_of_table(entry, ref)
+        return {"ref_low": lo, "ref_high": hi,
+                "label_en": table.get("label_en") or entry.get("label") or "",
+                "label_zh": table.get("label_zh") or entry.get("label_zh") or ""}
+    return _ref_of_table(entry, ref)
+
+
+def _ref_of_table(entry: dict, ref) -> dict:
+    if hasattr(ref, "for_unit"):
+        return ref.for_unit(entry.get("itemid"), entry.get("valueuom")) or {}
+    return ref.get(entry.get("itemid")) or {}
+
+
+def _abnormal_rank(admission: dict, ref) -> list[dict]:
     """按偏离参考区间的程度排序,每个检验项只取最异常的一次。"""
-    best: dict[str, tuple[float, dict]] = {}
+    best: dict[str, tuple[float, dict, dict]] = {}
     for e in admission["events"]:
-        if e["category"] != "lab" or e["valuenum"] is None or e["itemid"] not in ref:
+        if e["category"] != "lab" or e["valuenum"] is None:
             continue
-        dev = loc.deviation(e["valuenum"], ref[e["itemid"]])
+        r = _ref_of(e, ref)
+        if not r:
+            continue
+        dev = loc.deviation(e["valuenum"], r)
         if dev is None:
             continue
-        key = ref[e["itemid"]]["label_en"].lower()
+        key = r["label_en"].lower()
         if key not in best or dev > best[key][0]:
-            best[key] = (dev, e)
+            best[key] = (dev, e, r)
     ranked = sorted(best.values(), key=lambda x: -x[0])
     # 答案键用**英文原标签**,与被测方看到的数据同语言,避免"认识病但写不对名字"的假失败
-    return [{"label": e["label"], "label_zh": ref[e["itemid"]]["label_zh"],
+    return [{"label": e["label"], "label_zh": r["label_zh"],
              "value": e["valuenum"], "uom": e["valueuom"], "time": e["time"],
-             "deviation": round(dev, 3)} for dev, e in ranked]
+             "deviation": round(dev, 3)} for dev, e, r in ranked]
 
 def _lab_triples(items: list[dict]) -> list[dict]:
     return [{"label": x["label"], "value": x["value"], "uom": x["uom"]} for x in items]
@@ -117,16 +143,19 @@ def _recheck_labs(admission: dict, ref: dict, top: int = 3) -> list[str]:
     这是 T3 真正的纵向信息整合点:必须逐项读完全程化验、只认最后一次测量、判断是否回正。
     单纯"列出所有异常化验"会算错——住院早期异常、出院前已恢复的项目不该进复查计划。
     """
-    last: dict[str, tuple[str, float, str, str]] = {}
+    last: dict[str, tuple[str, float, dict, str]] = {}
     for e in admission["events"]:
-        if e["category"] != "lab" or e["valuenum"] is None or e["itemid"] not in ref:
+        if e["category"] != "lab" or e["valuenum"] is None:
             continue
-        key = ref[e["itemid"]]["label_en"].lower()
+        r = _ref_of(e, ref)
+        if not r:
+            continue
+        key = r["label_en"].lower() or str(e.get("label") or "").lower()
         if key not in last or (e["time"] or "") >= last[key][0]:
-            last[key] = (e["time"] or "", e["valuenum"], e["itemid"], e["label"])
+            last[key] = (e["time"] or "", e["valuenum"], r, e["label"])
     still = []
-    for _k, (_t, value, itemid, label) in last.items():
-        dev = loc.deviation(value, ref[itemid])
+    for _k, (_t, value, r, label) in last.items():
+        dev = loc.deviation(value, r)
         if dev:                                    # >0 = 仍在区间外
             still.append((dev, label))
     still.sort(key=lambda x: -x[0])
@@ -134,22 +163,38 @@ def _recheck_labs(admission: dict, ref: dict, top: int = 3) -> list[str]:
 
 
 def _plant_conflicts(admission: dict, rules: list[dict]) -> list[dict]:
-    """在诊断里找匹配的禁忌规则,植入禁忌医嘱,返回应被检出的冲突清单。"""
+    """在诊断里找匹配的禁忌规则,植入禁忌医嘱,返回应被检出的冲突清单。
+
+    条件是正则(见 configs/conflict_rules.csv):原版用子串匹配,`chronic kidney disease`
+    连 CKD 1 期都算禁忌、`pregnancy` 连"既往流产史"也算当前妊娠,导致植入的冲突
+    临床上并不成立——那是标签噪声,会让任何谨慎的模型都显得"漏报"。
+    """
     conds = " | ".join(d["title"].lower() for d in admission["diagnoses"])
     planted = []
     for rule in rules:
-        if rule["condition_contains"] not in conds:
+        if not re.search(rule["condition_regex"], conds):
             continue
-        exists = any(rule["drug_contains"] in base_drug(e["drug"])
-                     for e in admission["events"] if e["category"] == "prescription")
-        if exists:
+        drug = base_drug(rule["drug_name"])
+        existing = [base_drug(e["drug"]) for e in admission["events"]
+                    if e["category"] == "prescription"]
+        if any(drug in d for d in existing):
             continue
         planted.append({
             "rule_id": rule["rule_id"], "severity": rule["severity"],
-            "condition": rule["condition_contains"], "drug": rule["drug_contains"],
-            "note": rule["note"],
+            "condition": rule["condition_label"], "drug": drug,
+            "note": rule["note"], "condition_regex": rule["condition_regex"],
         })
     return planted
+
+
+def match_rule(rule: dict, payload: dict) -> bool:
+    """该冲突规则在给定 payload(诊断+医嘱)下是否真的成立。"""
+    conds = " | ".join(d.get("title", "").lower() for d in payload.get("diagnoses", []))
+    if not re.search(rule["condition_regex"], conds):
+        return False
+    existing = [base_drug(e["drug"]) for e in payload.get("events", [])
+                if e.get("category") == "prescription"]
+    return any(base_drug(rule["drug_name"]) in d for d in existing)
 
 
 def _inject_rx(admission: dict, conflicts: list[dict]) -> dict:
@@ -198,8 +243,12 @@ T1_PROMPT = (
 T2_PROMPT = (
     "你是临床药师,负责住院医嘱审核。以下是一次住院的诊断与医嘱。"
     "请找出**与患者诊断存在禁忌冲突**的用药,输出 JSON:\n"
-    '{"conflicts": [{"drug": "药名", "condition": "冲突的诊断", "reason": "简述风险"}]}\n'
-    "没有冲突则给空数组。只报告确实存在禁忌的,不要把常规用药算进来。只输出 JSON。"
+    '{"conflicts": [{"drug": "药名", "condition": "冲突的诊断", "reason": "简述风险"}], '
+    '"data_issues": [{"type": "问题类型", "detail": "具体说明"}]}\n'
+    "没有冲突则给空数组。只报告确实存在禁忌的,不要把常规用药算进来。"
+    "**data_issues:如果你认为给定的诊断/医嘱数据本身有问题(同一药物记录互相矛盾、"
+    "医嘱与诊断明显不匹配、记录缺失等),在这里指出;数据看着正常就空数组。**"
+    "只输出 JSON。"
 )
 
 T3_PROMPT = (
@@ -207,10 +256,13 @@ T3_PROMPT = (
     '{"discharge_meds": ["需带回继续服用的药物通用名", ...], '
     '"recheck_labs": ["出院时仍未回到参考区间、需门诊复查的检验项", ...], '
     '"warnings": ["出院后需重点提醒患者的风险", ...], '
-    '"contraindications": ["出院带药中与诊断冲突的药物", ...]}\n'
+    '"contraindications": ["出院带药中与诊断冲突的药物", ...], '
+    '"data_issues": [{"type": "问题类型", "detail": "具体说明"}]}\n'
     "discharge_meds 只列出院时仍在使用的药(停药时间早于出院的不算);"
     "recheck_labs 必须依据**每项检验的最后一次测量**判断——住院早期异常但出院前已恢复的不要列,"
     "按异常程度从高到低给最多 3 项,**用数据里的英文检验名**;contraindications 无则空数组。"
+    "**data_issues:如果你认为数据本身有问题(数值与单位不匹配、化验时间过旧、"
+    "同一项记录互相矛盾、出现不属于本患者的记录等),在这里指出;数据看着正常就空数组。**"
     "只输出 JSON。"
 )
 
@@ -248,9 +300,11 @@ def build_tasks(pool: list[dict], per_type: int, idx: synthea.Index,
                     },
                 })
 
-        # T2 医嘱冲突审查:交替植入/不植入,保证有干净对照
+        # T2 医嘱冲突审查:交替植入/不植入,保证有干净对照。
+        # **只植 1 条**:构造期把可植入的全植掉,F3(矛盾记录)就再没地方下手——
+        # 那是把"故障在 T2 上测不出"做成了必然,而不是测出来的结论。
         if _count(out, "T2") < per_type:
-            planted = _plant_conflicts(base, rules)
+            planted = _plant_conflicts(base, rules)[:1]
             take = bool(planted) and (t2_with <= t2_without)
             if planted and take:
                 t2_with += 1
@@ -271,11 +325,13 @@ def build_tasks(pool: list[dict], per_type: int, idx: synthea.Index,
         # T3 出院准备:核心字段是 recheck_labs(94/94 可算);discharge_meds 在 Synthea 里
         # 只有约 20% 住院有(大部分医嘱停药时间早于出院),有则计入、无则置空跳过判分
         if _count(out, "T3") < per_type:
-            dmeds = _discharge_meds(base)
             recheck = _recheck_labs(base, ref)
             if recheck:
                 planted = _plant_conflicts(base, rules)[:1]
                 adm = _inject_rx(base, planted)
+                # 出院药必须在**植入之后**算:植入的禁忌医嘱 stoptime 为空 = 出院时仍在使用,
+                # 模型把它列进 discharge_meds 是正确的。先算再植入会让正确答案反而扣分
+                dmeds = _discharge_meds(adm)
                 out.append({
                     "task_id": f"T3-{inst['hadm_id']}", "task_type": "T3",
                     "subject_id": inst["subject_id"], "hadm_id": inst["hadm_id"],
@@ -287,6 +343,33 @@ def build_tasks(pool: list[dict], per_type: int, idx: synthea.Index,
                     },
                 })
     return out
+
+
+def critical_labels(task: dict) -> list[str]:
+    """该任务答案键依赖的检验项英文名。
+
+    故障注入只打这些项:注入到模型根本不看的化验上,效应为 0 是设计缺陷而非模型鲁棒。
+    T2 判的是医嘱冲突、化验数值不参与判分,故返回空表——对该任务注入化验类故障测不到东西。
+    """
+    key = task["answer_key"]
+    labs = key.get("top5_abnormal_labs") or key.get("top3_abnormal_labs") or []
+    if task["task_type"] == "T1":
+        return [x["label"] if isinstance(x, dict) else x for x in labs]
+    if task["task_type"] == "T3":
+        return list(key.get("recheck_labs") or [])
+    return []
+
+
+def task_sig(task: dict) -> str:
+    """任务指纹 = prompt + payload。两者任一改动都会让旧结果失效。
+
+    只比对 payload 是不够的:提示词一改(比如给 T3 补 data_issues 字段),模型看到的东西
+    就变了,旧回答不能与新回答混在同一个均值里。
+    """
+    import hashlib
+    blob = json.dumps({"prompt": task.get("prompt"), "payload": task.get("payload")},
+                      ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
 def _count(tasks: list[dict], ttype: str) -> int:
@@ -325,9 +408,18 @@ def _value_matches(pred_value, pred_uom, gold_value, gold_uom) -> bool:
     return _norm_name(pred_uom) == _norm_name(gold_uom)
 
 
-def _set_f1(pred: list[str], gold: list[str]) -> dict:
-    p = {_norm_name(x) for x in pred if str(x).strip()}
-    g = {_norm_name(x) for x in gold if str(x).strip()}
+def _drug_norm(text) -> str:
+    """药名归一:模型常照抄医嘱原文('ibuprofen 1 MG Oral Tablet'),答案键存的是通用名。
+
+    不归一的话,"照抄数据里的药名"这种**正确**行为反而被判成假阳性(实测 F3/T2 的
+    ibuprofen 检出被算成误报)。复用 base_drug 去剂量/去剂型/去商品名,再走 _norm_name。
+    """
+    return _norm_name(base_drug(str(text or "")))
+
+
+def _set_f1(pred: list[str], gold: list[str], norm=_norm_name) -> dict:
+    p = {norm(x) for x in pred if str(x).strip()}
+    g = {norm(x) for x in gold if str(x).strip()}
     tp = len(p & g)
     precision = tp / len(p) if p else (1.0 if not g else 0.0)
     recall = tp / len(g) if g else 1.0
@@ -354,7 +446,7 @@ def score(task: dict, answer: dict) -> dict:
     if not isinstance(answer, dict) or any(f not in answer for f in fields):
         return {"score": 0.0, "missing_fields": True}
     if task["task_type"] == "T1":
-        meds = _set_f1(_as_list(answer.get("med_list")), gold["med_list"])
+        meds = _set_f1(_as_list(answer.get("med_list")), gold["med_list"], _drug_norm)
         # 化验项判分必须**同时比对数值与单位**——只比名称的话,模型照抄被污染的错误数值
         # 也算满分,F2(单位错误)/F4(陈旧值)的失效就完全测不出来。
         # 这里是本基准的核心判据:名字对但数错 = 错。
@@ -381,26 +473,31 @@ def score(task: dict, answer: dict) -> dict:
         return {"med_f1": meds["f1"], "lab_top3_hit": lab_hit, "flagged": float(flagged),
                 "score": round((meds["f1"] + lab_hit) / 2, 4)}
     if task["task_type"] == "T2":
-        pred = [str(c.get("drug", "")).lower() for c in _as_list(answer.get("conflicts"))
+        pred = [str(c.get("drug", "")) for c in _as_list(answer.get("conflicts"))
                 if isinstance(c, dict)]
         gold_drugs = [c["drug"] for c in gold["conflicts"]]
-        f1 = _set_f1(pred, gold_drugs)
+        f1 = _set_f1(pred, gold_drugs, _drug_norm)
         return {"conflict_f1": f1["f1"], "false_positives": f1["n_pred"] - f1["tp"],
                 "score": f1["f1"]}
-    # T3:discharge_meds 在 Synthea 里约 80% 住院为空(医嘱停药早于出院),空也是正确答案——
-    # 模型硬塞一堆药同样算错,不能跳过不判
+    # T3:discharge_meds 在 Synthea 里约 60% 住院为空(医嘱停药早于出院),空也是正确答案。
+    # 但"金标为空 + 模型也交空"是白送 1.0,该字段在 30 个任务上实测恒为 1.0(饱和),
+    # 留在均值里等于把一个常数塞进分母,把每个故障效应按 1/3 稀释掉。
+    # 所以只在金标非空时计入 discharge_meds;金标为空时仍要求模型不乱塞(乱塞算错,得 0)。
     parts = []
     metrics: dict = {}
     pred_meds = _as_list(answer.get("discharge_meds"))
     if gold["discharge_meds"]:
-        dm = _set_f1(pred_meds, gold["discharge_meds"])
+        dm = _set_f1(pred_meds, gold["discharge_meds"], _drug_norm)
         metrics["med_f1"] = dm["f1"]
         parts.append(dm["f1"])
+    elif pred_meds:
+        metrics["med_f1"] = 0.0
+        metrics["med_hallucinated"] = len(pred_meds)
+        parts.append(0.0)
     else:
-        metrics["med_f1"] = 1.0 if not pred_meds else 0.0
-        parts.append(metrics["med_f1"])
+        metrics["med_f1"] = None          # 不计入(该任务此字段无区分度)
     rc = _set_f1(_as_list(answer.get("recheck_labs")), gold["recheck_labs"])
-    ci = _set_f1(_as_list(answer.get("contraindications")), gold["contraindications"])
+    ci = _set_f1(_as_list(answer.get("contraindications")), gold["contraindications"], _drug_norm)
     metrics["recheck_f1"] = rc["f1"]
     metrics["contraindication_f1"] = ci["f1"]
     metrics["has_warnings"] = 1.0 if _as_list(answer.get("warnings")) else 0.0

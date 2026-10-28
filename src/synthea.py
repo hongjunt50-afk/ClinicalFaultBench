@@ -145,7 +145,10 @@ def build_timeline(csv_dir: Path, patient_id: str, index: Index | None = None) -
         for o in obs:
             if o.get("ENCOUNTER") != enc_id:
                 continue
-            r = ref.get(o["CODE"]) or {}
+            # 按 (码, 单位) 取区间:同码不同单位量纲可能差 40 倍(RDW 的 % 与 fL、
+            # 肌钙蛋白的 pg/mL 与 ng/L),只按码取会把整项判成异常
+            r = (ref.for_unit(o["CODE"], o.get("UNITS")) if hasattr(ref, "for_unit")
+                 else (ref.get(o["CODE"]) or {}))
             value = _num(o["VALUE"])
             lo, hi = r.get("ref_low"), r.get("ref_high")
             abnormal = (value is not None and lo is not None and hi is not None

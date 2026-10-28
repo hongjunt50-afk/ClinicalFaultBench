@@ -1,0 +1,69 @@
+已有结果 86 条,分次跑模式:只补缺口
+待跑 54 次调用(任务 90 × 故障 7 × 严重度 2,扣除已完成与不适用组合)
+  T3-f2184f93-de91-03e F1/mild   score=0.889 targeted=0 credit=3.040
+  T3-21998c7e-52ac-63f F1/mild   score=0.889 targeted=0 credit=0.590
+  T3-4d6e9143-aca1-c1c F1/mild   score=0.778 targeted=0 credit=1.390
+  T3-f2184f93-de91-03e F1/severe score=0.889 targeted=0 credit=2.950
+  T3-21998c7e-52ac-63f F1/severe score=0.667 targeted=0 credit=0.770
+  T3-4d6e9143-aca1-c1c F1/severe score=0.778 targeted=0 credit=1.410
+  T3-21998c7e-52ac-63f F2/mild   score=1.000 targeted=0 credit=0.390
+  T3-95b08680-5056-51b F2/mild   score=1.000 targeted=0 credit=1.160
+  T3-21998c7e-52ac-63f F2/severe score=1.000 targeted=0 credit=0.590
+  T3-95b08680-5056-51b F2/severe score=1.000 targeted=0 credit=1.000
+  T3-d1d1932f-bbf3-d84 F3/mild   score=0.933 targeted=0 credit=0.930
+  T3-2a945473-f291-5f6 F3/mild   score=0.822 targeted=0 credit=0.880
+  T3-d6817060-39d3-2dd F3/mild   score=0.778 targeted=0 credit=2.700
+  T3-5c0e81b3-a445-5e3 F3/mild   score=0.933 targeted=0 credit=0.970
+  T3-a3a2d7a6-1252-73a F3/mild   score=0.778 targeted=0 credit=2.400
+  T3-a22ca626-b087-ba5 F3/mild   score=0.711 targeted=0 credit=1.360
+  T3-0f4f5baa-aa68-73c F3/mild   score=0.889 targeted=0 credit=1.000
+  T3-16b9fe0d-d2f2-9f7 F3/mild   score=0.778 targeted=0 credit=2.860
+  T3-bbc42ee6-b2ac-84c F3/mild   score=0.889 targeted=0 credit=4.370
+  T3-adb7a0b3-b67c-73a F3/mild   score=0.778 targeted=0 credit=1.980
+  T3-d1d1932f-bbf3-d84 F3/severe score=0.746 targeted=0 credit=1.260
+  T3-2a945473-f291-5f6 F3/severe score=0.857 targeted=0 credit=1.500
+  T3-d6817060-39d3-2dd F3/severe score=0.689 targeted=0 credit=2.750
+  T3-5c0e81b3-a445-5e3 F3/severe score=0.857 targeted=0 credit=1.500
+  T3-a3a2d7a6-1252-73a F3/severe score=0.689 targeted=0 credit=2.670
+  T3-a22ca626-b087-ba5 F3/severe score=0.635 targeted=0 credit=1.570
+  T3-0f4f5baa-aa68-73c F3/severe score=0.722 targeted=0 credit=0.780
+  T3-16b9fe0d-d2f2-9f7 F3/severe score=0.689 targeted=0 credit=2.820
+  T3-bbc42ee6-b2ac-84c F3/severe score=0.689 targeted=0 credit=4.240
+  T3-adb7a0b3-b67c-73a F3/severe score=0.689 targeted=0 credit=1.720
+  T3-f2184f93-de91-03e F4/mild   score=0.889 targeted=0 credit=3.440
+  T3-21998c7e-52ac-63f F4/mild   score=1.000 targeted=0 credit=0.840
+  T3-4d6e9143-aca1-c1c F4/mild   score=0.889 targeted=0 credit=1.200
+  T3-f2184f93-de91-03e F4/severe score=0.556 targeted=0 credit=2.740
+  T3-21998c7e-52ac-63f F4/severe score=1.000 targeted=0 credit=0.600
+  T3-4d6e9143-aca1-c1c F4/severe score=0.667 targeted=0 credit=2.250
+  T3-f2184f93-de91-03e F5/mild   score=0.333 targeted=0 credit=2.440
+  T3-21998c7e-52ac-63f F5/mild   score=0.667 targeted=0 credit=0.290
+  T3-4d6e9143-aca1-c1c F5/mild   score=0.667 targeted=0 credit=0.860
+  T3-f2184f93-de91-03e F5/severe score=0.667 targeted=0 credit=1.620
+  T3-21998c7e-52ac-63f F5/severe score=0.667 targeted=0 credit=0.320
+  T3-4d6e9143-aca1-c1c F5/severe score=0.667 targeted=0 credit=0.700
+  T3-f2184f93-de91-03e F6/mild   score=0.889 targeted=0 credit=3.240
+  T3-21998c7e-52ac-63f F6/mild   score=1.000 targeted=0 credit=0.690
+  T3-4d6e9143-aca1-c1c F6/mild   score=0.778 targeted=0 credit=1.280
+  T3-f2184f93-de91-03e F6/severe score=0.889 targeted=0 credit=2.940
+  T3-21998c7e-52ac-63f F6/severe score=0.778 targeted=0 credit=0.750
+  T3-4d6e9143-aca1-c1c F6/severe score=0.778 targeted=0 credit=1.420
+  T3-f2184f93-de91-03e F7/mild   score=0.778 targeted=0 credit=3.190
+  T3-21998c7e-52ac-63f F7/mild   score=1.000 targeted=0 credit=0.650
+  T3-4d6e9143-aca1-c1c F7/mild   score=0.889 targeted=0 credit=1.830
+  T3-f2184f93-de91-03e F7/severe score=0.889 targeted=0 credit=3.790
+  T3-21998c7e-52ac-63f F7/severe score=1.000 targeted=0 credit=1.230
+  T3-4d6e9143-aca1-c1c F7/severe score=0.778 targeted=0 credit=3.150
+
+deepseek-v4.1-flash 故障效应(配对差值 = 干净分 - 故障分,正值表示性能下降)
+故障        mild n   mild 分   mild 降   mild 告警   sev n    sev 分    sev 降    sev 告警
+F1            10    0.855    0.067      0.40      10    0.749    0.172      0.50
+F2            10    0.893    0.033      0.60      10    0.860    0.067      0.70
+F3            10    0.829    0.071      0.00      10    0.726    0.174      0.00
+F4            10    0.899    0.022      0.40      10    0.832    0.089      0.50
+F5            10    0.538    0.383      0.40      10    0.571    0.350      0.30
+F6            10    0.877    0.044      0.50      10    0.879    0.042      0.50
+F7            10    0.860    0.061      0.00      10    0.840    0.081      0.00
+汇总 → results\matrix_summary_deepseek-v4.1-flash.json
+注:告警率=模型主动点名被注入项的比例(定向)。干净基线上该值为假阳基线。
+明细 → results\matrix_deepseek-v4.1-flash.jsonl(本次 54 条,累计 140 条)

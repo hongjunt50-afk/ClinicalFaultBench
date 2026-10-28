@@ -74,23 +74,55 @@ def load_conversions() -> dict[tuple[str, str], tuple[float, str]]:
     return out
 
 
-def load_loinc_ref() -> dict[str, dict]:
-    """LOINC 码 → 中文名 + 参考区间(Synthea 数据缺参考区间,判分需要)。"""
+class RefTable(dict):
+    """LOINC 参考区间表:按码查,也能按 (码, 单位) 查。
+
+    同一 LOINC 码可以带不同单位、且量纲完全不同(实测 RDW 在同一批数据里既有 % 也有 fL;
+    肌钙蛋白既有 pg/mL 也有 ng/L,数值差 40 倍)。只按码查会把 fL 的 RDW 拿去比 % 的区间,
+    结果 100% 的 RDW 都被标成异常、反复挤进"最异常化验"和"需复查项目"的答案键——
+    判分答案本身是错的,而模型只要照抄数据就会被扣分。
+    """
+
+    def __init__(self, by_code: dict[str, dict], by_code_uom: dict[tuple[str, str], dict]):
+        super().__init__(by_code)
+        self._by_code_uom = by_code_uom
+
+    def get(self, code, default=None):
+        return super().get(code, default)
+
+    def for_unit(self, code: str, uom: str | None) -> dict:
+        """优先精确匹配单位;无匹配时回退到按码(单单位项目占绝大多数)。"""
+        hit = self._by_code_uom.get((str(code), str(uom or "").strip()))
+        if hit is not None:
+            return hit
+        return super().get(code) or {}
+
+
+def load_loinc_ref() -> RefTable:
+    """LOINC 码 → 中文名 + 参考区间(Synthea 数据缺参考区间,判分需要)。
+
+    表里同一码可以有多行,每行一个单位(uom 列)。按码查时取第一行(兼容旧调用点),
+    需要精确到单位时用 RefTable.for_unit(code, uom)。
+    """
     path = REPO / "configs" / "ref_ranges_loinc.csv"
-    out = {}
+    by_code: dict[str, dict] = {}
+    by_code_uom: dict[tuple[str, str], dict] = {}
     with open(path, encoding="utf-8-sig") as f:
         for r in csv.DictReader(f):
             code = r["loinc"].strip()
             if not code:
                 continue
-            out[code] = {
+            entry = {
                 "label_zh": r["label_zh"].strip(), "label_en": r["label_en"].strip(),
+                "uom": (r.get("uom") or "").strip(),
                 "ref_low": float(r["ref_low"]) if r["ref_low"].strip() else None,
                 "ref_high": float(r["ref_high"]) if r["ref_high"].strip() else None,
                 "critical_low": float(r["critical_low"]) if r["critical_low"].strip() else None,
                 "critical_high": float(r["critical_high"]) if r["critical_high"].strip() else None,
             }
-    return out
+            by_code_uom[(code, entry["uom"])] = entry
+            by_code.setdefault(code, entry)
+    return RefTable(by_code, by_code_uom)
 
 
 def deviation(value: float | None, ref: dict | None) -> float | None:

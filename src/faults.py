@@ -27,6 +27,7 @@ import argparse
 import copy
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -35,9 +36,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 REPO = Path(__file__).resolve().parents[1]
 TASKS_PATH = REPO / "configs" / "tasks.jsonl"
 
-# 单位换算:把"数值换成另一种单位的数、单位标签却保持不变"制造真实的数据集成错误
+# 单位换算:把"数值换成另一种单位的数、单位标签却保持不变"制造真实的数据集成错误。
+# 换算因子必须**真的改变数值**:肌酐原来写的 1.0(mg/dL 与 mg/dL 之间"换算")等于什么都没做,
+# 记录里却记成 applied,于是 F2 在肌酐为主的 T1 上测到的是一堆无声无息的样本,
+# 效应被稀释到 0.006。mg/dL → µmol/L 是 ×88.4。
 UNIT_SWAP = {
-    ("mg/dL", "mg/dL→mmol/L"): [("Glucose", 0.0555), ("Creatinine", 1.0),
+    ("mg/dL", "mg/dL→mmol/L"): [("Glucose", 0.0555), ("Creatinine", 88.4),
                                 ("Urea nitrogen", 0.357), ("Calcium", 0.2495)],
 }
 
@@ -56,6 +60,32 @@ def _rng(*parts) -> float:
 
 def _lab_events(payload: dict) -> list[dict]:
     return [e for e in payload.get("events", []) if e.get("category") == "lab"]
+
+
+def _norm_label(text) -> str:
+    """检验项名归一(与 tasks._norm_name 同口径,避免两处判字面差)。"""
+    import re
+    s = str(text or "").strip().lower()
+    s = re.sub(r"[._/]+", " ", s).replace(",", " ")
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def donor_pool(task: dict, all_tasks: list[dict]) -> dict[str, list[dict]]:
+    """为 F6 备料:按"检验项名 → 另一位患者的同名测量行"建表。
+
+    排除同一患者(同一患者的另一住院不算跨患者),也排除同一条 answered 化验本身就有的重复。
+    实测 60 个化验类任务(30 T1 + 30 T3)全部能找到同名供体,故不会因缺料而漏跑。
+    """
+    pid = task.get("subject_id")
+    pool: dict[str, list[dict]] = {}
+    for other in all_tasks:
+        if other is task or other.get("subject_id") == pid:
+            continue
+        for e in _lab_events(other["payload"]):
+            if e.get("valuenum") is None or not e.get("time") or "planted" in e:
+                continue
+            pool.setdefault(_norm_label(e.get("label")), []).append(e)
+    return pool
 
 
 def _key_labels(critical: list[str] | None) -> set[str]:
@@ -117,7 +147,7 @@ def f2_unit_error(payload: dict, severity: str, seed: str,
         if keys and str(e.get("label", "")).lower() not in keys:
             continue        # 只打答案键依赖的项,否则模型不看它也照样对
         for _label, factor in UNIT_SWAP[("mg/dL", "mg/dL→mmol/L")]:
-            if e["label"].startswith(_label):
+            if e["label"].startswith(_label) and abs(factor - 1.0) > 1e-9:
                 candidates.append((e, factor))
                 break
     if not candidates:
@@ -144,17 +174,19 @@ def f2_unit_error(payload: dict, severity: str, seed: str,
 def f3_contradiction(payload: dict, severity: str, seed: str) -> tuple[dict, dict]:
     """F3 矛盾记录:诊断显示禁忌,医嘱里却出现该药(植入一条禁忌医嘱)。
 
-    mild = 植入 1 条;severe = 植入全部可植入的禁忌药。答案键由调用方按规则表重算。
+    mild = 植入 1 条;severe = 植入全部可植入的禁忌药。
+    规则用正则匹配(见 conflict_rules.csv):子串匹配会把 CKD 1 期、既往孕史也算成禁忌,
+    植入的"矛盾"临床上不成立,任何谨慎的模型都会被判成漏报。
     """
     import tasks as task_lib
     p = copy.deepcopy(payload)
     rules = task_lib.load_rules()
     conds = " | ".join(d.get("title", "").lower() for d in p.get("diagnoses", []))
-    existing = {task_lib.base_drug(e["drug"]) for e in p.get("events", [])
-                if e.get("category") == "prescription"}
+    existing = [task_lib.base_drug(e["drug"]) for e in p.get("events", [])
+                if e.get("category") == "prescription"]
     plantable = [r for r in rules
-                 if r["condition_contains"] in conds
-                 and not any(r["drug_contains"] in d for d in existing)]
+                 if re.search(r["condition_regex"], conds)
+                 and not any(task_lib.base_drug(r["drug_name"]) in d for d in existing)]
     if not plantable:
         return p, {"applied": False, "reason": "该住院无匹配禁忌规则"}
     n = 1 if severity == "mild" else min(len(plantable), 3)
@@ -163,14 +195,14 @@ def f3_contradiction(payload: dict, severity: str, seed: str) -> tuple[dict, dic
     for c in planted:
         p["events"].append({
             "time": t, "category": "prescription",
-            "drug": f"{c['drug_contains']} 1 MG Oral Tablet", "drug_type": "MAIN",
+            "drug": f"{c['drug_name']} 1 MG Oral Tablet", "drug_type": "MAIN",
             "dose_val_rx": None, "dose_unit_rx": None, "route": None,
             "stoptime": None,
         })
     p["events"].sort(key=lambda e: (e["time"] is None, e["time"] or ""))
     return p, {"applied": True, "n_affected": len(planted),
-               "rules": [{"rule_id": c["rule_id"], "drug": c["drug_contains"],
-                          "condition": c["condition_contains"]} for c in planted]}
+               "rules": [{"rule_id": c["rule_id"], "drug": task_lib.base_drug(c["drug_name"]),
+                          "condition": c["condition_label"]} for c in planted]}
 
 
 def f4_stale_data(payload: dict, severity: str, seed: str,
@@ -221,49 +253,96 @@ def f5_tool_truncation(payload: dict, severity: str, seed: str,
 
 
 def f6_cross_patient(payload: dict, severity: str, seed: str,
-                     donor_labs: list[dict] | None = None) -> tuple[dict, dict]:
-    """F6 跨患者污染:混入另一位患者的化验行(标签真实、数值真实,但属于别人)。"""
+                     donor_labs: dict | list | None = None,
+                     critical: list[str] | None = None) -> tuple[dict, dict]:
+    """F6 跨患者污染:混入另一位患者对**同一检验项**的测量行(标签真实、数值真实,但属于别人)。
+
+    2026-10-27 修:早期版本从固定供体取前 5 行,标签与任务无关,等于往 payload 里撒噪声——
+    在 T2(判医嘱冲突、不看化验数值)上效应为纯随机,T2 的方差就是 F6 严重度曲线反向的全部来源。
+    现在与 F1/F2/F4/F5 一致按答案键定向:只打该任务判分依赖的检验项,且供体必须同名同量纲、
+    数值与本患者不同——否则要么模型根本看不到,要么两条数值一致而无声。
+    """
     p = copy.deepcopy(payload)
-    if not donor_labs:
-        return p, {"applied": False, "reason": "无供体患者数据"}
-    own = _lab_events(p)
+    keys = [str(k) for k in (critical or []) if str(k).strip()]
+    if not keys:
+        return p, {"applied": False, "reason": "该任务不依赖化验数值(T2 等),F6 不适用"}
+    own = [e for e in _lab_events(p) if e.get("time")]
     if not own:
         return p, {"applied": False, "reason": "本住院无化验"}
-    n = 1 if severity == "mild" else min(len(donor_labs), 5)
-    # 污染行伪装成本住院的时间点(取本住院最后一次化验时间),但不改标签
+
+    donors: dict[str, list[dict]] = {}
+    if isinstance(donor_labs, dict):
+        donors = {k: list(v) for k, v in donor_labs.items() if v}
+    elif donor_labs:
+        for row in donor_labs:
+            donors.setdefault(_norm_label(row.get("label")), []).append(row)
+    if not donors:
+        return p, {"applied": False, "reason": "无供体患者数据"}
+
+    want = {_norm_label(k) for k in keys}
+    targets = []
+    seen: set[str] = set()
+    for e in sorted(own, key=lambda x: (x.get("time") or ""), reverse=True):
+        lbl = _norm_label(e.get("label"))
+        if lbl not in want or lbl in seen or e.get("valuenum") is None:
+            continue
+        pool = [r for r in donors.get(lbl, [])
+                if r.get("valuenum") is not None
+                and abs(float(r["valuenum"]) - float(e["valuenum"])) > 1e-9]
+        if not pool:
+            continue
+        seen.add(lbl)
+        targets.append((e, pool))
+        if len(targets) >= 5:
+            break
+    if not targets:
+        return p, {"applied": False, "reason": "答案键检验项找不到同名且数值不同的供体行"}
+
+    # mild 只污染最靠近出院的那一项(当前决策最依赖它);severe 覆盖全部可污染项
+    n = 1 if severity == "mild" else len(targets)
     t = max((e.get("time") or "") for e in own) or p.get("admittime")
     injected = []
-    for src in donor_labs[:n]:
-        row = copy.deepcopy(src)
-        row["time"] = t
+    for own_row, pool in targets[:n]:
+        j = int(_rng(seed, "f6", own_row.get("label"), own_row.get("time")) * len(pool)) % len(pool)
+        row = copy.deepcopy(pool[j])
+        row.pop("planted", None)
+        row["time"] = t                     # 伪装成本住院时间点的"另一次测量",标签不动
         p["events"].append(row)
         injected.append({"label": row.get("label"), "value": row.get("valuenum"),
-                         "uom": row.get("valueuom")})
+                         "uom": row.get("valueuom"),
+                         "patient_own_value": own_row.get("valuenum")})
     p["events"].sort(key=lambda e: (e["time"] is None, e["time"] or ""))
     return p, {"applied": True, "n_affected": len(injected), "injected": injected}
 
 
-def f7_timeline_drift(payload: dict, severity: str, seed: str) -> tuple[dict, dict]:
-    """F7 时间线漂移:事件时间戳随机小幅前后漂移,并打乱顺序(病程先后关系被破坏)。"""
+def f7_timeline_drift(payload: dict, severity: str, seed: str,
+                      critical: list[str] | None = None) -> tuple[dict, dict]:
+    """F7 时间线漂移:事件时间戳随机小幅前后漂移,并打乱顺序(病程先后关系被破坏)。
+
+    critical 只用于**记录**受影响的判分相关检验项:不记的话定向告警率恒为 0,
+    那不是"模型从不点名",而是"判据无从匹配"——把测量缺口写成模型缺陷。
+    """
     p = copy.deepcopy(payload)
     events = [e for e in p.get("events", []) if e.get("time")]
     if len(events) < 5:
         return p, {"applied": False, "reason": "事件太少"}
     hours = 6 if severity == "mild" else 48
-    shuffled_n = 0
+    keys = {_norm_label(k) for k in (critical or [])}
+    touched: set[str] = set()
     for i, e in enumerate(events):
         r = _rng(seed, "f7", e.get("time"), e.get("label") or e.get("drug"), i)
         offset = (r - 0.5) * 2 * hours / 24.0
         e["time"] = _shift_time(e["time"], offset)
-        shuffled_n += 1
+        if keys and _norm_label(e.get("label")) in keys:
+            touched.add(str(e.get("label")))
     # 打乱顺序(severity 越高打得越狠)
     if severity == "severe":
         events_sorted = sorted(events, key=lambda e: e["time"])
         k = len(events_sorted) // 2
         head, tail = events_sorted[:k], events_sorted[k:]
         events[:] = (tail + head) if head and tail else events_sorted
-    return p, {"applied": True, "n_affected": shuffled_n, "drift_hours": hours,
-               "reordered": severity == "severe"}
+    return p, {"applied": True, "n_affected": len(events), "drift_hours": hours,
+               "reordered": severity == "severe", "labels": sorted(touched)}
 
 
 FAULTS = {
@@ -276,24 +355,61 @@ FAULTS = {
     "F7": ("时序层", "时间线漂移", f7_timeline_drift),
 }
 
+# 每个故障只在**有判分通道**的任务上测(2026-10-27 定):
+#   化验数值类(F1/F2/F4/F5/F6)要靠 top3_abnormal_labs / recheck_labs 才能体现,T2 不判化验;
+#   矛盾记录类(F3)要靠 conflicts / contraindications 才能体现,T1 没有冲突字段;
+#   时间线类(F7)要靠"取最后一次数值"或"当前异常项"体现,同样与 T2 无关。
+# 不设这道闸时,注入到无通道任务上得到的是纯方差,却被平均进"故障效应"里稀释一切
+# (实测 F5 整体 0.256 vs 只看 T1/T3 的 0.417;F6 的严重度曲线反向也全部来自 T2)。
+APPLICABLE = {
+    "F1": ("T1", "T3"),
+    "F2": ("T1", "T3"),
+    "F3": ("T2", "T3"),
+    "F4": ("T1", "T3"),
+    "F5": ("T1", "T3"),
+    "F6": ("T1", "T3"),
+    "F7": ("T1", "T3"),
+}
 
-def inject(payload: dict, spec: dict, donor_labs: list[dict] | None = None,
-           critical: list[str] | None = None) -> tuple[dict, dict]:
+
+def applicable(fault: str, critical: list[str] | None = None,
+               task_type: str | None = None) -> bool:
+    """该故障在该任务上是否存在判分通道。task_type 未知时按 critical 是否为空判。"""
+    if fault in APPLICABLE:
+        if task_type:
+            return task_type in APPLICABLE[fault]
+        return bool(critical) if fault != "F3" else True
+    return True
+
+
+def _not_applicable_reason(fault: str) -> str:
+    return f"{fault} 在该任务类型上无判分通道(适用任务:{'/'.join(APPLICABLE.get(fault, ()))}),已跳过"
+
+
+def inject(payload: dict, spec: dict, donor_labs: dict | list | None = None,
+           critical: list[str] | None = None, task_type: str | None = None) -> tuple[dict, dict]:
     """按 spec 注入故障。spec = {"fault": "F2", "severity": "mild"}。
 
     critical:该任务答案键依赖的检验项名;传了就只打这些项(否则注入到模型根本不看的
     化验上,效应为 0 只是设计缺陷,不是模型鲁棒)。
+    donor_labs:F6 的供体表(见 donor_pool);其他故障忽略。
+    task_type:用于适用性判定(见 applicable)。
+
+    适用性不成立的组合一律返回 applied=False,由调用方跳过——不能让它以"零效应"混进
+    故障效应表:那会把"这项故障与该任务无关"读成"模型对这项故障免疫"。
     """
     fault, severity = spec["fault"], spec["severity"]
     if fault not in FAULTS:
         raise ValueError(f"未知故障类型 {fault}")
     if severity not in SEVERITIES:
         raise ValueError(f"未知严重度 {severity}")
+    if not applicable(fault, critical, task_type):
+        return copy.deepcopy(payload), {"applied": False, "reason": _not_applicable_reason(fault)}
     fn = FAULTS[fault][2]
     seed = spec.get("seed", "")
     if fault == "F6":
-        out, rec = fn(payload, severity, seed, donor_labs)
-    elif fault in ("F1", "F2", "F4", "F5"):
+        out, rec = fn(payload, severity, seed, donor_labs, critical)
+    elif fault in ("F1", "F2", "F4", "F5", "F7"):
         out, rec = fn(payload, severity, seed, critical)
     else:
         out, rec = fn(payload, severity, seed)
@@ -304,46 +420,78 @@ def inject(payload: dict, spec: dict, donor_labs: list[dict] | None = None,
 
 def selftest() -> None:
     tasks = [json.loads(x) for x in TASKS_PATH.read_text(encoding="utf-8").splitlines()]
-    # 基底:元素最丰富的任务;F3 额外找一个"有可植入禁忌"的任务,否则会被误当故障失效
-    base = max(tasks, key=lambda t: len(t["payload"]["events"]))
-    donor = next(t for t in tasks if t["task_id"] != base["task_id"])
-    donor_labs = [e for e in donor["payload"]["events"] if e["category"] == "lab"][:5]
-
     import tasks as task_lib
     rules = task_lib.load_rules()
-    f3_base = None
-    for t in tasks:
-        if t["task_type"] == "T2":
-            continue                    # T2 已植入冲突,用作 F3 基底会"没得再植"
-        out, rec = inject(t["payload"], {"fault": "F3", "severity": "mild", "seed": "probe"})
-        if rec["applied"]:
-            f3_base = t
-            break
-    assert f3_base is not None, "全任务集都植不了 F3 禁忌——规则表与数据脱节"
-    print(f"基底任务 {base['task_id']}: {len(base['payload']['events'])} 事件;"
-          f"F3 基底 {f3_base['task_id']}(规则 {len(rules)} 条)")
+
+    def crit(t):
+        return task_lib.critical_labels(t)
+
+    # 每个故障各自挑一个"能打得进去"的基底:同一基底不可能对所有故障都可注入
+    # (如 F2 只能换算 4 种化验,F3 只能在不含该药的住院里植入)
+    subjects: dict[str, dict] = {}
+    for fault in FAULTS:
+        for t in tasks:
+            if not applicable(fault, crit(t), t["task_type"]):
+                continue
+            _out, rec = inject(t["payload"], {"fault": fault, "severity": "severe",
+                                              "seed": "probe"}, donor_pool(t, tasks),
+                               crit(t), t["task_type"])
+            if rec["applied"]:
+                subjects[fault] = t
+                break
+        assert fault in subjects, f"{fault} 在所有适用任务上都注不进去——数据与规则表脱节"
+    base = subjects["F1"]
+    t2 = next(t for t in tasks if t["task_type"] == "T2")
+    print(f"基底任务 {base['task_id']}({len(base['payload']['events'])} 事件,"
+          f"答案键检验项 {len(crit(base))} 个);F3 基底 {subjects['F3']['task_id']}"
+          f"(规则 {len(rules)} 条)")
     original = json.dumps(base["payload"], ensure_ascii=False, sort_keys=True)
 
     for fault, (layer, name, _fn) in FAULTS.items():
         for severity in SEVERITIES:
-            subject = f3_base if fault == "F3" else base
-            out, rec = inject(subject["payload"], {"fault": fault, "severity": severity,
-                                                   "seed": "st"}, donor_labs)
-            assert json.dumps(subject["payload"], ensure_ascii=False,
-                              sort_keys=True) == json.dumps(subject["payload"],
-                                                            ensure_ascii=False, sort_keys=True)
+            subject = subjects[fault]
+            donors = donor_pool(subject, tasks) if fault == "F6" else None
+            spec = {"fault": fault, "severity": severity, "seed": "st"}
+            before = json.dumps(subject["payload"], ensure_ascii=False, sort_keys=True)
+            out, rec = inject(subject["payload"], spec, donors, crit(subject), subject["task_type"])
+            assert json.dumps(subject["payload"], ensure_ascii=False, sort_keys=True) == before, \
+                f"{fault} 修改了入参"
             assert set(out.keys()) == set(subject["payload"].keys()), f"{fault} 改变了 schema 顶层键"
-            out2, _ = inject(subject["payload"], {"fault": fault, "severity": severity,
-                                                  "seed": "st"}, donor_labs)
+            out2, _ = inject(subject["payload"], spec, donors, crit(subject), subject["task_type"])
             assert json.dumps(out, ensure_ascii=False, sort_keys=True) == \
                    json.dumps(out2, ensure_ascii=False, sort_keys=True), f"{fault}/{severity} 不可复现"
             assert rec["applied"], f"{fault}/{severity} 未生效: {rec.get('reason')}"
+            if fault == "F2":
+                # 换算必须真的改数值:因子为 1.0 时"注入"了等于没注入,却仍记 applied=True,
+                # 会让该故障的效应被无声样本稀释(肌酐踩过这个坑,实测降到 0.006)
+                real = [c for c in rec.get("changes") or [] if "from" in c]
+                assert real and any(c["from"] != c["to"] for c in real), \
+                    f"F2/{severity} 换算前后数值相同,故障无声"
+            if fault == "F6":
+                # 定向性:注入行的标签必须在答案键依赖项内,否则等于撒噪声
+                assert all(_norm_label(x["label"]) in {_norm_label(k) for k in crit(subject)}
+                           for x in rec["injected"]), "F6 注入到了非判分项上"
+                assert all(x.get("patient_own_value") != x.get("value")
+                           for x in rec["injected"]), "F6 供体数值与本患者相同,故障无声"
             print(f"  OK {fault}/{severity:6s} [{layer}] {name}: "
                   f"{rec.get('n_affected')} 项受影响")
+
+    # 适用性闸:T2 只判医嘱冲突,化验类故障在该任务上必须判为不适用。
+    # 否则注入到无判分通道的任务上得到的是纯方差,却被平均进"故障效应"。
+    for fault in ("F1", "F2", "F4", "F5", "F6", "F7"):
+        _out, rec = inject(t2["payload"], {"fault": fault, "severity": "severe", "seed": "st"},
+                           donor_pool(t2, tasks), crit(t2), "T2")
+        assert not rec["applied"], f"{fault} 在 T2 上仍然生效——会把无判分通道的噪声算进效应"
+    _out, rec = inject(base["payload"], {"fault": "F3", "severity": "mild", "seed": "st"},
+                       None, crit(base), "T1")
+    assert not rec["applied"], "F3 在 T1 上仍然生效——T1 没有冲突字段可判"
+    print("  OK 适用性闸:化验类故障在 T2 全跳过、F3 在 T1 跳过")
+
     # 纯函数:基底对象在所有注入后应逐字节不变
     assert json.dumps(base["payload"], ensure_ascii=False, sort_keys=True) == original, \
         "注入修改了入参"
-    print("SELFTEST OK(七类 × 两档 = 14 组全部生效,纯函数、schema 不变、可复现)")
+    print("SELFTEST OK(七类 × 两档 = 14 组全部生效,纯函数、schema 不变、可复现;"
+          "F6 定向且数值异于本患者;适用性闸生效)")
 
 
 def main() -> None:

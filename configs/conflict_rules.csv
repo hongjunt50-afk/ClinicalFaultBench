@@ -1,12 +1,12 @@
-condition_contains,drug_contains,rule_id,severity,note
-chronic kidney disease,metformin,CKD_METFORMIN,high,二甲双胍在 CKD 中需减量或停用(eGFR<30 禁用)
-chronic kidney disease,ibuprofen,CKD_NSAID,high,NSAIDs 可致肾损伤, CKD 患者慎用/禁用
-chronic kidney disease,ketorolac,CKD_NSAID,high,NSAIDs 可致肾损伤
-congestive heart failure,ibuprofen,HF_NSAID,high,NSAIDs 致水钠潴留, 心衰患者禁用
-congestive heart failure,pioglitazone,HF_TZD,high,噻唑烷二酮类致液体潴留, 心衰禁用
-hyperkalemia,potassium chloride,HYPERK_KCL,high,高钾时补钾可致命
-atrial fibrillation,warfarin,AF_WARFARIN,info,房颤抗凝——本身合理, 但需监测 INR(用作干扰项)
-pregnancy,lisinopril,PREG_ACEI,high,ACEI 妊娠禁用
-pregnancy,atorvastatin,PREG_STATIN,high,他汀妊娠禁用
-cirrhosis,acetaminophen,CIRRHOSIS_APAP,medium,肝硬化者对乙酰氨基酚需限量
-asthma,metoprolol,ASTHMA_BETABLOCK,medium,非选择性 β 阻滞剂可诱发支气管痉挛
+rule_id,condition_regex,condition_label,drug_name,severity,note
+CKD4_METFORMIN,"chronic kidney disease stage (4|5)|end-stage renal disease","advanced chronic kidney disease",metformin,high,eGFR<30 时二甲双胍禁用(乳酸酸中毒);CKD 1-3 期不是禁忌
+CKD3_IBUPROFEN,"chronic kidney disease stage (3|4|5)|end-stage renal disease","moderate-to-advanced chronic kidney disease",ibuprofen,high,CKD 3 期起 NSAIDs 应避免(肾损伤/高钾/急性肾衰)
+CKD3_KETOROLAC,"chronic kidney disease stage (3|4|5)|end-stage renal disease","moderate-to-advanced chronic kidney disease",ketorolac,high,酮咯酸肾毒性强,CKD 3 期起禁用
+CKD3_NAPROXEN,"chronic kidney disease stage (3|4|5)|end-stage renal disease","moderate-to-advanced chronic kidney disease",naproxen,high,萘普生等 NSAIDs 在 CKD 3 期起应避免
+HF_IBUPROFEN,congestive heart failure,"congestive heart failure",ibuprofen,high,NSAIDs 致水钠潴留,心衰明确禁用
+HF_KETOROLAC,congestive heart failure,"congestive heart failure",ketorolac,high,NSAIDs 致水钠潴留并拮抗利尿剂,失代偿心衰禁用
+HF_NAPROXEN,congestive heart failure,"congestive heart failure",naproxen,high,NSAIDs 致水钠潴留,心衰禁用
+HF_PIOGLITAZONE,congestive heart failure,"congestive heart failure",pioglitazone,high,噻唑烷二酮类致液体潴留,心衰禁用
+ASTHMA_PROPANOLOL,asthma,asthma,propranolol,high,非选择性 β 阻滞剂可诱发支气管痉挛,哮喘禁用
+PREG_ACEI,"(normal pregnancy|eclampsia in pregnancy|tubal pregnancy)","current pregnancy",lisinopril,high,ACEI 妊娠禁用(致畸);只认当前妊娠,既往孕史不是禁忌
+PREG_STATIN,"(normal pregnancy|eclampsia in pregnancy|tubal pregnancy)","current pregnancy",atorvastatin,high,他汀妊娠禁用;只认当前妊娠

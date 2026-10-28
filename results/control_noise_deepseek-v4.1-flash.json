@@ -1,0 +1,11 @@
+{
+  "model": "deepseek-v4.1-flash",
+  "kind": "noise",
+  "n": 15,
+  "mean_score": 0.2889,
+  "by_type": {
+    "T1": 0.0,
+    "T2": 0.6,
+    "T3": 0.2667
+  }
+}

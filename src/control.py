@@ -56,21 +56,31 @@ def main() -> None:
             picked.append(t)
 
     total = 0.0
+    by_type: dict[str, list[float]] = {}
     for t in picked:
         probe = dict(t)
         probe["payload"] = blank_payload(t["payload"], args.kind)
         rec = runner.run_one(secrets["RELAY_BASE_URL"], secrets["RELAY_API_KEY"],
                              args.model, probe)
         total += rec["metrics"]["score"]
+        by_type.setdefault(t["task_type"], []).append(rec["metrics"]["score"])
         print(f"  {t['task_id']} [{args.kind}] score={rec['metrics']['score']:.3f} "
               f"credit={rec.get('credit', 0):.2f}")
     mean = total / len(picked)
     print(f"\n{args.model} 在「{args.kind}」payload 上平均分 {mean:.3f}"
           f"(n={len(picked)})——这是不看数据也能拿到的基础分,故障效应须扣除它")
+    per_type = {tt: round(sum(v) / len(v), 4) for tt, v in sorted(by_type.items())}
+    print("按任务类型:" + "  ".join(f"{tt}={v:.3f}(n={len(by_type[tt])})"
+                                    for tt, v in per_type.items()))
+    # T2 的干净对照上"无冲突"就是正确答案,空 payload 交空数组即满分——这不是模型鲁棒,
+    # 是任务本身在白送分。必须单独点出来,否则会被当成"基线很高"读
+    if per_type.get("T2", 0) >= 0.99:
+        print("注意:T2 在空白 payload 上得 1.0——干净对照任务交空数组即满分,"
+              "该子集不提供信息(见 RESULTS.md 局限)")
     out = REPO / "results" / f"control_{args.kind}_{args.model}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"model": args.model, "kind": args.kind,
-                               "n": len(picked), "mean_score": round(mean, 4)},
+    out.write_text(json.dumps({"model": args.model, "kind": args.kind, "n": len(picked),
+                               "mean_score": round(mean, 4), "by_type": per_type},
                               ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"→ {out}")
 

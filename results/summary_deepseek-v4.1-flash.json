@@ -1,23 +1,23 @@
 {
   "n": 90,
-  "credit": 69.86,
+  "credit": 93.14,
   "by_type": {
     "T1": {
       "n": 30,
-      "mean_score": 0.8114
+      "mean_score": 0.8203
     },
     "T2": {
       "n": 30,
-      "mean_score": 0.673
+      "mean_score": 0.7667
     },
     "T3": {
       "n": 30,
-      "mean_score": 0.6148
+      "mean_score": 0.9019
     }
   },
-  "overall": 0.6998,
+  "overall": 0.8296,
   "errors": 0,
   "parse_failures": 0,
   "model": "deepseek-v4.1-flash",
-  "elapsed_s": 362.5
+  "elapsed_s": 431.3
 }

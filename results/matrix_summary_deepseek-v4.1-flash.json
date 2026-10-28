@@ -1,100 +1,240 @@
 {
   "F1": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.9259,
-      "paired_drop": -0.0185,
-      "flag_rate": 0.333
+      "n": 10,
+      "mean_score": 0.8423,
+      "paired_drop": 0.0844,
+      "flag_rate": 0.9,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.1
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.0689
+        }
+      }
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.8148,
-      "paired_drop": 0.0926,
-      "flag_rate": 0.333
+      "n": 10,
+      "mean_score": 0.7301,
+      "paired_drop": 0.1967,
+      "flag_rate": 0.9,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.2334
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.16
+        }
+      }
     }
   },
   "F2": {
     "mild": {
-      "n": 2,
-      "mean_score": 0.9167,
-      "paired_drop": 0.0,
-      "flag_rate": 0.5
+      "n": 10,
+      "mean_score": 0.7934,
+      "paired_drop": 0.1222,
+      "flag_rate": 1.0,
+      "by_type": {
+        "T1": {
+          "n": 7,
+          "drop": 0.1429
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.0741
+        }
+      }
     },
     "severe": {
-      "n": 2,
-      "mean_score": 0.8333,
-      "paired_drop": 0.0834,
-      "flag_rate": 0.5
+      "n": 10,
+      "mean_score": 0.8267,
+      "paired_drop": 0.0889,
+      "flag_rate": 1.0,
+      "by_type": {
+        "T1": {
+          "n": 7,
+          "drop": 0.1429
+        },
+        "T3": {
+          "n": 3,
+          "drop": -0.037
+        }
+      }
     }
   },
   "F3": {
     "mild": {
-      "n": 2,
-      "mean_score": 0.6945,
-      "paired_drop": 0.1667,
-      "flag_rate": 0.5
+      "n": 10,
+      "mean_score": 0.9667,
+      "paired_drop": 0.0,
+      "flag_rate": 1.0,
+      "by_type": {
+        "T2": {
+          "n": 5,
+          "drop": 0.0
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.0
+        }
+      }
     },
     "severe": {
-      "n": 2,
-      "mean_score": 0.5833,
-      "paired_drop": 0.2779,
-      "flag_rate": 0.5
+      "n": 10,
+      "mean_score": 0.9445,
+      "paired_drop": 0.0222,
+      "flag_rate": 0.9,
+      "by_type": {
+        "T2": {
+          "n": 5,
+          "drop": 0.0
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.0444
+        }
+      }
     }
   },
   "F4": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.963,
-      "paired_drop": -0.0555,
-      "flag_rate": 0.333
+      "n": 10,
+      "mean_score": 0.8279,
+      "paired_drop": 0.0989,
+      "flag_rate": 0.2,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.0667
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.1311
+        }
+      }
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.8704,
-      "paired_drop": 0.037,
-      "flag_rate": 0.333
+      "n": 10,
+      "mean_score": 0.8312,
+      "paired_drop": 0.0956,
+      "flag_rate": 0.9,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.0333
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.1578
+        }
+      }
     }
   },
   "F5": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.6852,
-      "paired_drop": 0.2222,
-      "flag_rate": 0.0
+      "n": 10,
+      "mean_score": 0.5379,
+      "paired_drop": 0.3889,
+      "flag_rate": 0.5,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.4334
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.3444
+        }
+      }
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.6852,
-      "paired_drop": 0.2222,
-      "flag_rate": 0.333
+      "n": 10,
+      "mean_score": 0.5379,
+      "paired_drop": 0.3889,
+      "flag_rate": 0.4,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.4334
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.3444
+        }
+      }
     }
   },
   "F6": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.5371,
-      "paired_drop": 0.3704,
-      "flag_rate": 0.0
+      "n": 10,
+      "mean_score": 0.8868,
+      "paired_drop": 0.04,
+      "flag_rate": 0.9,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.0667
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.0133
+        }
+      }
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.8704,
-      "paired_drop": 0.037,
-      "flag_rate": 0.0
+      "n": 10,
+      "mean_score": 0.8156,
+      "paired_drop": 0.1111,
+      "flag_rate": 1.0,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.0333
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.1889
+        }
+      }
     }
   },
   "F7": {
     "mild": {
-      "n": 3,
-      "mean_score": 0.8704,
-      "paired_drop": 0.037,
-      "flag_rate": 0.0
+      "n": 10,
+      "mean_score": 0.8534,
+      "paired_drop": 0.0733,
+      "flag_rate": 0.7,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.1
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.0467
+        }
+      }
     },
     "severe": {
-      "n": 3,
-      "mean_score": 0.5074,
-      "paired_drop": 0.4,
-      "flag_rate": 0.0
+      "n": 10,
+      "mean_score": 0.8368,
+      "paired_drop": 0.09,
+      "flag_rate": 0.8,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.1
+        },
+        "T3": {
+          "n": 5,
+          "drop": 0.08
+        }
+      }
     }
   }
 }
