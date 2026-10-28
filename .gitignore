@@ -19,3 +19,8 @@ docs/internal/
 # os
 .DS_Store
 Thumbs.db
+
+# 重判/重跑的本地备份(results/ 下不入库)
+results/*.prerescore
+results/*.bak-*
+results/*.pre-*
