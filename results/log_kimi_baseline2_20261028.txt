@@ -1,0 +1,46 @@
+已有 59 条,其中 prompt/payload 已变需重跑 0 个;本次待跑 31 个
+  T3-16b9fe0d-d2f2-9f77-4401-0fcf9640a77d score=0.889 credit=29.860 累计=29.86
+  T1-bf64b469-d14e-d91d-835f-7eefd30e7fae score=0.400 credit=25.110 累计=54.97
+  T2-bf64b469-d14e-d91d-835f-7eefd30e7fae score=1.000 credit=21.230 累计=76.20
+  T3-bf64b469-d14e-d91d-835f-7eefd30e7fae score=0.667 credit=28.160 累计=104.36
+  T1-052a5ca8-5923-d449-a985-3116977ac317 score=0.778 credit=5.700 累计=110.06
+  T2-052a5ca8-5923-d449-a985-3116977ac317 score=1.000 credit=6.080 累计=116.14
+  T3-052a5ca8-5923-d449-a985-3116977ac317 score=1.000 credit=8.230 累计=124.37
+  T1-f702b1d8-0459-ee4c-32c4-32428e9b8a87 score=0.762 credit=22.120 累计=146.49
+  T2-f702b1d8-0459-ee4c-32c4-32428e9b8a87 score=1.000 credit=18.120 累计=164.61
+  T3-f702b1d8-0459-ee4c-32c4-32428e9b8a87 score=0.556 credit=23.590 累计=188.20
+  T1-bbc42ee6-b2ac-84c5-fd59-49a58ab0fd40 score=0.500 credit=47.890 累计=236.09
+  T2-bbc42ee6-b2ac-84c5-fd59-49a58ab0fd40 score=1.000 credit=43.010 累计=279.10
+  T3-bbc42ee6-b2ac-84c5-fd59-49a58ab0fd40 score=1.000 credit=49.790 累计=328.89
+  T1-735fc30d-1275-3a43-e231-e7f353b9cff9 score=0.833 credit=10.800 累计=339.69
+  T2-735fc30d-1275-3a43-e231-e7f353b9cff9 score=1.000 credit=10.030 累计=349.72
+  T3-735fc30d-1275-3a43-e231-e7f353b9cff9 score=0.889 credit=12.280 累计=362.00
+  T1-adb7a0b3-b67c-73a1-fd06-598bc8fe99af score=0.667 credit=14.780 累计=376.78
+  T2-adb7a0b3-b67c-73a1-fd06-598bc8fe99af score=1.000 credit=12.040 累计=388.82
+  T3-adb7a0b3-b67c-73a1-fd06-598bc8fe99af score=0.778 credit=17.670 累计=406.49
+  T1-57ad8667-36b6-df6e-38c0-5e90a0d4d817 score=0.667 credit=27.780 累计=434.27
+预算用尽(434.27 >= 430.0),停止派发
+{
+  "n": 79,
+  "credit": 1183.68,
+  "by_type": {
+    "T1": {
+      "n": 27,
+      "mean_score": 0.805
+    },
+    "T2": {
+      "n": 26,
+      "mean_score": 0.7949
+    },
+    "T3": {
+      "n": 26,
+      "mean_score": 0.8671
+    }
+  },
+  "overall": 0.8221,
+  "errors": 0,
+  "parse_failures": 0,
+  "model": "kimi-k3.1-pro",
+  "elapsed_s": 715.6
+}
+明细 → results\baseline_kimi-k3.1-pro.jsonl

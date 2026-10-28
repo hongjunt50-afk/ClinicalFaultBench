@@ -1,23 +1,23 @@
 {
-  "n": 6,
-  "credit": 84.41,
+  "n": 90,
+  "credit": 1346.06,
   "by_type": {
     "T1": {
-      "n": 2,
-      "mean_score": 0.7976
+      "n": 30,
+      "mean_score": 0.7981
     },
     "T2": {
-      "n": 2,
-      "mean_score": 0.5
+      "n": 30,
+      "mean_score": 0.7889
     },
     "T3": {
-      "n": 2,
-      "mean_score": 0.3889
+      "n": 30,
+      "mean_score": 0.8534
     }
   },
-  "overall": 0.5622,
+  "overall": 0.8135,
   "errors": 0,
   "parse_failures": 0,
   "model": "kimi-k3.1-pro",
-  "elapsed_s": 141.2
+  "elapsed_s": 464.7
 }

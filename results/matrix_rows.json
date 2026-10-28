@@ -1,0 +1,658 @@
+[
+ {
+  "task_type": "T1",
+  "fault": "F1",
+  "severity": "mild",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F1",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F1",
+  "severity": "mild",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F1",
+  "severity": "mild",
+  "score": 0.7619,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F1",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F1",
+  "severity": "mild",
+  "score": 0.2222,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F1",
+  "severity": "severe",
+  "score": 0.5,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F1",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F1",
+  "severity": "severe",
+  "score": 0.5556,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F1",
+  "severity": "severe",
+  "score": 0.9285,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F1",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F1",
+  "severity": "severe",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F2",
+  "severity": "mild",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F2",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F2",
+  "severity": "mild",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F2",
+  "severity": "mild",
+  "score": 0.5952,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F2",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F2",
+  "severity": "mild",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F2",
+  "severity": "severe",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F2",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F2",
+  "severity": "severe",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F2",
+  "severity": "severe",
+  "score": 0.5952,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F2",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F2",
+  "severity": "severe",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F3",
+  "severity": "mild",
+  "score": 0.6667,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F3",
+  "severity": "mild",
+  "score": 0.5,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F3",
+  "severity": "mild",
+  "score": 0.375,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F3",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F3",
+  "severity": "mild",
+  "score": 0.2222,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F3",
+  "severity": "severe",
+  "score": 0.5333,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F3",
+  "severity": "severe",
+  "score": 0.4111,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F3",
+  "severity": "severe",
+  "score": 0.8334,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F3",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F3",
+  "severity": "severe",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F4",
+  "severity": "mild",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F4",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F4",
+  "severity": "mild",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F4",
+  "severity": "mild",
+  "score": 0.9285,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F4",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F4",
+  "severity": "mild",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F4",
+  "severity": "severe",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F4",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F4",
+  "severity": "severe",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F4",
+  "severity": "severe",
+  "score": 0.9285,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F4",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F4",
+  "severity": "severe",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F5",
+  "severity": "mild",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F5",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F5",
+  "severity": "mild",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F5",
+  "severity": "mild",
+  "score": 0.4285,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F5",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F5",
+  "severity": "mild",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F5",
+  "severity": "severe",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F5",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F5",
+  "severity": "severe",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F5",
+  "severity": "severe",
+  "score": 0.5952,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F5",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F5",
+  "severity": "severe",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F6",
+  "severity": "mild",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F6",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F6",
+  "severity": "mild",
+  "score": 0.5556,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F6",
+  "severity": "mild",
+  "score": 0.4285,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F6",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F6",
+  "severity": "mild",
+  "score": 0.1111,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F6",
+  "severity": "severe",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F6",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F6",
+  "severity": "severe",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F6",
+  "severity": "severe",
+  "score": 0.5952,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F6",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F6",
+  "severity": "severe",
+  "score": 0.2222,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F7",
+  "severity": "mild",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F7",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F7",
+  "severity": "mild",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F7",
+  "severity": "mild",
+  "score": 0.5952,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F7",
+  "severity": "mild",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F7",
+  "severity": "mild",
+  "score": 0.2222,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F7",
+  "severity": "severe",
+  "score": 0.8334,
+  "clean": 0.8334,
+  "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F7",
+  "severity": "severe",
+  "score": 0.0,
+  "clean": 1.0,
+  "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F7",
+  "severity": "severe",
+  "score": 0.6667,
+  "clean": 0.6667,
+  "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2"
+ },
+ {
+  "task_type": "T1",
+  "fault": "F7",
+  "severity": "severe",
+  "score": 0.7619,
+  "clean": 0.5952,
+  "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T2",
+  "fault": "F7",
+  "severity": "severe",
+  "score": 1.0,
+  "clean": 1.0,
+  "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ },
+ {
+  "task_type": "T3",
+  "fault": "F7",
+  "severity": "severe",
+  "score": 0.2222,
+  "clean": 0.1111,
+  "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9"
+ }
+]

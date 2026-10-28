@@ -408,13 +408,39 @@ def _value_matches(pred_value, pred_uom, gold_value, gold_uom) -> bool:
     return _norm_name(pred_uom) == _norm_name(gold_uom)
 
 
+def _zh_to_en() -> dict[str, str]:
+    """中文药名 → 英文通用名(判分用)。
+
+    kimi 这类模型有时把医嘱药名**译成中文**再输出(`依诺肝素钠`),而答案键是医嘱原文的英文
+    通用名(`enoxaparin sodium`)。不做这层映射就会把"正确识别 + 正常翻译"判成幻觉。
+    表本身是通用医学术语(`configs/terminology_zh/drugs_zh.csv`),不含任何患者数据。
+    """
+    global _ZH_MAP
+    try:
+        return _ZH_MAP
+    except NameError:
+        pass
+    _ZH_MAP = {}
+    path = REPO / "configs" / "terminology_zh" / "drugs_zh.csv"
+    if path.exists():
+        with open(path, encoding="utf-8-sig") as f:
+            for r in csv.DictReader(f):
+                zh, en = (r.get("name_zh") or "").strip(), (r.get("drug") or "").strip()
+                if zh and en:
+                    _ZH_MAP[zh] = en
+    return _ZH_MAP
+
+
 def _drug_norm(text) -> str:
     """药名归一:模型常照抄医嘱原文('ibuprofen 1 MG Oral Tablet'),答案键存的是通用名。
 
     不归一的话,"照抄数据里的药名"这种**正确**行为反而被判成假阳性(实测 F3/T2 的
-    ibuprofen 检出被算成误报)。复用 base_drug 去剂量/去剂型/去商品名,再走 _norm_name。
+    ibuprofen 检出被算成误报)。复用 base_drug 去剂量/去剂型/去商品名,再走 _norm_name;
+    中文药名先按术语表映射回英文,避免"翻译正确却被判幻觉"。
     """
-    return _norm_name(base_drug(str(text or "")))
+    raw = str(text or "").strip()
+    mapped = _zh_to_en().get(raw)
+    return _norm_name(base_drug(mapped or raw))
 
 
 def _set_f1(pred: list[str], gold: list[str], norm=_norm_name) -> dict:

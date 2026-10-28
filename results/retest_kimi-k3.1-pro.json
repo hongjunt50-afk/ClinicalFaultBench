@@ -1,0 +1,66 @@
+{
+  "summary": {
+    "model": "kimi-k3.1-pro",
+    "n": 6,
+    "credit": 109.65,
+    "mean_delta": -0.0278,
+    "mean_abs_delta": 0.0278,
+    "max_abs_delta": 0.1666,
+    "sd_delta": 0.068,
+    "by_type": {
+      "T1": -0.0833,
+      "T2": 0.0,
+      "T3": 0.0
+    }
+  },
+  "rows": [
+    {
+      "task_id": "T1-d1d1932f-bbf3-d840-830c-76370ae9aba2",
+      "task_type": "T1",
+      "run1": 0.8334,
+      "run2": 0.8334,
+      "delta": 0.0,
+      "credit": 6.41
+    },
+    {
+      "task_id": "T2-d1d1932f-bbf3-d840-830c-76370ae9aba2",
+      "task_type": "T2",
+      "run1": 1.0,
+      "run2": 1.0,
+      "delta": 0.0,
+      "credit": 4.35
+    },
+    {
+      "task_id": "T3-d1d1932f-bbf3-d840-830c-76370ae9aba2",
+      "task_type": "T3",
+      "run1": 1.0,
+      "run2": 1.0,
+      "delta": 0.0,
+      "credit": 6.48
+    },
+    {
+      "task_id": "T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9",
+      "task_type": "T1",
+      "run1": 0.9285,
+      "run2": 0.7619,
+      "delta": -0.1666,
+      "credit": 31.71
+    },
+    {
+      "task_id": "T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9",
+      "task_type": "T2",
+      "run1": 1.0,
+      "run2": 1.0,
+      "delta": 0.0,
+      "credit": 26.49
+    },
+    {
+      "task_id": "T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9",
+      "task_type": "T3",
+      "run1": 0.5556,
+      "run2": 0.5556,
+      "delta": 0.0,
+      "credit": 34.21
+    }
+  ]
+}

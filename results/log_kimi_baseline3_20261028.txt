@@ -1,0 +1,36 @@
+已有 79 条,其中 prompt/payload 已变需重跑 0 个;本次待跑 11 个
+  T2-57ad8667-36b6-df6e-38c0-5e90a0d4d817 score=1.000 credit=23.130 累计=23.13
+  T3-57ad8667-36b6-df6e-38c0-5e90a0d4d817 score=0.667 credit=29.310 累计=52.44
+  T1-7e887d9f-ebe0-f87b-838a-864ae9fe3bd6 score=0.833 credit=5.090 累计=57.53
+  T2-7e887d9f-ebe0-f87b-838a-864ae9fe3bd6 score=0.000 credit=5.110 累计=62.64
+  T3-7e887d9f-ebe0-f87b-838a-864ae9fe3bd6 score=0.833 credit=7.220 累计=69.86
+  T1-33b08235-6639-b541-f626-dab06f08b7c8 score=0.667 credit=12.430 累计=82.29
+  T2-33b08235-6639-b541-f626-dab06f08b7c8 score=1.000 credit=10.480 累计=92.77
+  T3-33b08235-6639-b541-f626-dab06f08b7c8 score=0.889 credit=18.310 累计=111.08
+  T1-cf7f23bd-6efb-8d7a-97a8-fbe812389f3f score=0.708 credit=18.030 累计=129.11
+  T2-cf7f23bd-6efb-8d7a-97a8-fbe812389f3f score=1.000 credit=13.170 累计=142.28
+  T3-cf7f23bd-6efb-8d7a-97a8-fbe812389f3f score=0.667 credit=20.100 累计=162.38
+{
+  "n": 90,
+  "credit": 1346.06,
+  "by_type": {
+    "T1": {
+      "n": 30,
+      "mean_score": 0.7981
+    },
+    "T2": {
+      "n": 30,
+      "mean_score": 0.7889
+    },
+    "T3": {
+      "n": 30,
+      "mean_score": 0.8534
+    }
+  },
+  "overall": 0.8135,
+  "errors": 0,
+  "parse_failures": 0,
+  "model": "kimi-k3.1-pro",
+  "elapsed_s": 464.7
+}
+明细 → results\baseline_kimi-k3.1-pro.jsonl

@@ -1,0 +1,82 @@
+已有 3 条,其中 prompt/payload 已变需重跑 0 个;本次待跑 87 个
+  T1-f2184f93-de91-03ef-31c6-aafdc62b9ba9 score=0.928 credit=29.960 累计=29.96
+  T2-f2184f93-de91-03ef-31c6-aafdc62b9ba9 score=1.000 credit=27.460 累计=57.42
+  T3-f2184f93-de91-03ef-31c6-aafdc62b9ba9 score=0.556 credit=30.840 累计=88.26
+  T1-21998c7e-52ac-63f4-6c84-d0003f70d262 score=0.783 credit=5.030 累计=93.29
+  T2-21998c7e-52ac-63f4-6c84-d0003f70d262 score=1.000 credit=7.190 累计=100.48
+  T3-21998c7e-52ac-63f4-6c84-d0003f70d262 score=1.000 credit=7.120 累计=107.60
+  T1-4d6e9143-aca1-c1c5-79f9-48b0efb414c6 score=0.833 credit=14.060 累计=121.66
+  T2-4d6e9143-aca1-c1c5-79f9-48b0efb414c6 score=1.000 credit=11.320 累计=132.98
+  T3-4d6e9143-aca1-c1c5-79f9-48b0efb414c6 score=0.889 credit=19.070 累计=152.05
+  T1-2a945473-f291-5f67-aed8-16ef9e6c1be7 score=1.000 credit=9.850 累计=161.90
+  T2-2a945473-f291-5f67-aed8-16ef9e6c1be7 score=1.000 credit=7.500 累计=169.40
+  T3-2a945473-f291-5f67-aed8-16ef9e6c1be7 score=1.000 credit=11.300 累计=180.70
+  T1-d6817060-39d3-2dd8-3d06-571b950064cb score=0.667 credit=17.260 累计=197.96
+  T2-d6817060-39d3-2dd8-3d06-571b950064cb score=1.000 credit=17.630 累计=215.59
+  T3-d6817060-39d3-2dd8-3d06-571b950064cb score=0.889 credit=22.820 累计=238.41
+  T1-95b08680-5056-51b6-25d4-7bfa9bd96e4f score=0.833 credit=7.580 累计=245.99
+  T2-95b08680-5056-51b6-25d4-7bfa9bd96e4f score=1.000 credit=5.390 累计=251.38
+  T3-95b08680-5056-51b6-25d4-7bfa9bd96e4f score=1.000 credit=8.780 累计=260.16
+  T1-0f4f5baa-aa68-73c5-8ae9-532581aa04b8 score=1.000 credit=5.830 累计=265.99
+  T2-0f4f5baa-aa68-73c5-8ae9-532581aa04b8 score=0.000 credit=4.120 累计=270.11
+  T3-0f4f5baa-aa68-73c5-8ae9-532581aa04b8 score=0.833 credit=5.630 累计=275.74
+  T1-ee367083-467c-8783-e679-de92765e9611 score=1.000 credit=6.860 累计=282.60
+  T2-ee367083-467c-8783-e679-de92765e9611 score=1.000 credit=3.910 累计=286.51
+  T3-ee367083-467c-8783-e679-de92765e9611 score=0.933 credit=9.190 累计=295.70
+  T1-dd31dc55-5176-e3ab-5fb5-651373972b95 score=1.000 credit=6.300 累计=302.00
+  T2-dd31dc55-5176-e3ab-5fb5-651373972b95 score=0.000 credit=4.980 累计=306.98
+  T3-dd31dc55-5176-e3ab-5fb5-651373972b95 score=0.833 credit=7.980 累计=314.96
+  T1-5c0e81b3-a445-5e35-17fa-679061efe0a4 score=0.833 credit=7.480 累计=322.44
+  T2-5c0e81b3-a445-5e35-17fa-679061efe0a4 score=1.000 credit=6.430 累计=328.87
+  T3-5c0e81b3-a445-5e35-17fa-679061efe0a4 score=1.000 credit=10.330 累计=339.20
+  T1-f8aafb96-fdb9-f48f-7884-af4ff1464d6e score=0.783 credit=6.670 累计=345.87
+  T2-f8aafb96-fdb9-f48f-7884-af4ff1464d6e score=1.000 credit=3.970 累计=349.84
+  T3-f8aafb96-fdb9-f48f-7884-af4ff1464d6e score=1.000 credit=8.480 累计=358.32
+  T1-804872ae-869c-ecaa-ba84-8869c4d02c51 score=0.900 credit=33.750 累计=392.07
+  T2-804872ae-869c-ecaa-ba84-8869c4d02c51 score=1.000 credit=31.760 累计=423.83
+  T3-804872ae-869c-ecaa-ba84-8869c4d02c51 score=0.667 credit=34.790 累计=458.62
+  T1-dd31dc55-5176-e3ab-9670-4a50e70736ab score=0.833 credit=6.650 累计=465.27
+  T2-dd31dc55-5176-e3ab-9670-4a50e70736ab score=0.000 credit=4.510 累计=469.78
+  T3-dd31dc55-5176-e3ab-9670-4a50e70736ab score=0.833 credit=7.930 累计=477.71
+  T1-a3a2d7a6-1252-73a4-1b8a-03f049a1b607 score=0.667 credit=21.650 累计=499.36
+  T2-a3a2d7a6-1252-73a4-1b8a-03f049a1b607 score=1.000 credit=19.270 累计=518.63
+  T3-a3a2d7a6-1252-73a4-1b8a-03f049a1b607 score=0.889 credit=25.440 累计=544.07
+  T1-ac6fcef6-3dd9-ca5a-5bcc-e0dcfd2fde39 score=0.567 credit=26.630 累计=570.70
+  T2-ac6fcef6-3dd9-ca5a-5bcc-e0dcfd2fde39 score=0.000 credit=24.650 累计=595.35
+  T3-ac6fcef6-3dd9-ca5a-5bcc-e0dcfd2fde39 score=0.556 credit=29.480 累计=624.83
+  T1-a22ca626-b087-ba58-79ac-b3acb71d5f6f score=1.000 credit=5.530 累计=630.36
+  T2-a22ca626-b087-ba58-79ac-b3acb71d5f6f score=1.000 credit=3.950 累计=634.31
+  T3-a22ca626-b087-ba58-79ac-b3acb71d5f6f score=0.889 credit=7.160 累计=641.47
+  T1-dd31dc55-5176-e3ab-37e5-db7c4e5cb146 score=1.000 credit=4.970 累计=646.44
+  T2-dd31dc55-5176-e3ab-37e5-db7c4e5cb146 score=0.000 credit=6.800 累计=653.24
+  T3-dd31dc55-5176-e3ab-37e5-db7c4e5cb146 score=1.000 credit=5.800 累计=659.04
+  T1-0f4f5baa-aa68-73c5-2682-42809ac0b9e9 score=1.000 credit=5.340 累计=664.38
+  T2-0f4f5baa-aa68-73c5-2682-42809ac0b9e9 score=0.667 credit=6.340 累计=670.72
+  T3-0f4f5baa-aa68-73c5-2682-42809ac0b9e9 score=1.000 credit=9.860 累计=680.58
+  T1-16b9fe0d-d2f2-9f77-4401-0fcf9640a77d score=0.667 credit=26.190 累计=706.77
+  T2-16b9fe0d-d2f2-9f77-4401-0fcf9640a77d score=1.000 credit=24.630 累计=731.40
+预算用尽(731.40 >= 700.0),停止派发
+{
+  "n": 59,
+  "credit": 749.41,
+  "by_type": {
+    "T1": {
+      "n": 20,
+      "mean_score": 0.8564
+    },
+    "T2": {
+      "n": 20,
+      "mean_score": 0.7333
+    },
+    "T3": {
+      "n": 19,
+      "mean_score": 0.8825
+    }
+  },
+  "overall": 0.8231,
+  "errors": 0,
+  "parse_failures": 0,
+  "model": "kimi-k3.1-pro",
+  "elapsed_s": 1775.8
+}
+明细 → results\baseline_kimi-k3.1-pro.jsonl

@@ -1,0 +1,240 @@
+{
+  "F1": {
+    "mild": {
+      "n": 7,
+      "mean_score": 0.7906,
+      "paired_drop": 0.0571,
+      "flag_rate": 0.571,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.0416
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.0778
+        }
+      }
+    },
+    "severe": {
+      "n": 7,
+      "mean_score": 0.6477,
+      "paired_drop": 0.2,
+      "flag_rate": 1.0,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.2084
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.1889
+        }
+      }
+    }
+  },
+  "F2": {
+    "mild": {
+      "n": 7,
+      "mean_score": 0.8239,
+      "paired_drop": 0.0714,
+      "flag_rate": 1.0,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.1
+        },
+        "T3": {
+          "n": 2,
+          "drop": 0.0
+        }
+      }
+    },
+    "severe": {
+      "n": 7,
+      "mean_score": 0.7525,
+      "paired_drop": 0.1429,
+      "flag_rate": 0.857,
+      "by_type": {
+        "T1": {
+          "n": 5,
+          "drop": 0.2
+        },
+        "T3": {
+          "n": 2,
+          "drop": 0.0
+        }
+      }
+    }
+  },
+  "F3": {
+    "mild": {
+      "n": 7,
+      "mean_score": 0.9841,
+      "paired_drop": 0.0,
+      "flag_rate": 1.0,
+      "by_type": {
+        "T2": {
+          "n": 4,
+          "drop": 0.0
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.0
+        }
+      }
+    },
+    "severe": {
+      "n": 7,
+      "mean_score": 0.9683,
+      "paired_drop": 0.0159,
+      "flag_rate": 1.0,
+      "by_type": {
+        "T2": {
+          "n": 4,
+          "drop": 0.0
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.037
+        }
+      }
+    }
+  },
+  "F4": {
+    "mild": {
+      "n": 7,
+      "mean_score": 0.7906,
+      "paired_drop": 0.0571,
+      "flag_rate": 0.143,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.0833
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.0222
+        }
+      }
+    },
+    "severe": {
+      "n": 7,
+      "mean_score": 0.8382,
+      "paired_drop": 0.0095,
+      "flag_rate": 0.714,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.0
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.0222
+        }
+      }
+    }
+  },
+  "F5": {
+    "mild": {
+      "n": 7,
+      "mean_score": 0.4826,
+      "paired_drop": 0.3651,
+      "flag_rate": 0.714,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.375
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.3519
+        }
+      }
+    },
+    "severe": {
+      "n": 7,
+      "mean_score": 0.4826,
+      "paired_drop": 0.3651,
+      "flag_rate": 0.429,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.375
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.3519
+        }
+      }
+    }
+  },
+  "F6": {
+    "mild": {
+      "n": 7,
+      "mean_score": 0.8541,
+      "paired_drop": -0.0064,
+      "flag_rate": 0.857,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.0416
+        },
+        "T3": {
+          "n": 3,
+          "drop": -0.0704
+        }
+      }
+    },
+    "severe": {
+      "n": 7,
+      "mean_score": 0.7525,
+      "paired_drop": 0.0952,
+      "flag_rate": 0.857,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.0
+        },
+        "T3": {
+          "n": 3,
+          "drop": 0.2222
+        }
+      }
+    }
+  },
+  "F7": {
+    "mild": {
+      "n": 7,
+      "mean_score": 0.8874,
+      "paired_drop": -0.0397,
+      "flag_rate": 0.857,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.0
+        },
+        "T3": {
+          "n": 3,
+          "drop": -0.0926
+        }
+      }
+    },
+    "severe": {
+      "n": 7,
+      "mean_score": 0.8636,
+      "paired_drop": -0.0159,
+      "flag_rate": 0.857,
+      "by_type": {
+        "T1": {
+          "n": 4,
+          "drop": 0.0416
+        },
+        "T3": {
+          "n": 3,
+          "drop": -0.0926
+        }
+      }
+    }
+  }
+}
