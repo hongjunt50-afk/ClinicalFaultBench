@@ -29,7 +29,7 @@ MIMIC-IV **demo** 本身是 Open Access + ODbL(可再分发),但全量数据受 
 
 - **中文化适配层**(`src/localization.py` + `configs/terminology_zh/`):检验项目/药品的中文通用名、诊断 ICD-9/10 章节中文名、中美单位制换算表。映射表只含通用医学术语,不含任何原始数据。时间线 JSON 中检验/医嘱/诊断自动附加 `label_zh`/`drug_zh`/`chapter_zh` 字段。
 - **F2 故障获得真实语义**:美制单位(mg/dL)与国内报告单 SI 制(mmol/L/µmol/L)之间的换算错位,`unit_conversions.csv` 的换算系数就是 F2"单位错误"故障的真实原型——国内系统接入国外/遗留数据时系统性发生的单位错位,而非人工臆造的数值扰动。
-- **待办**:Synthea 的药品命名与 MIMIC 词表差异极大(实测覆盖率 1.8%),映射表需按 LOINC 码重建,见 `docs/design-v2.md` §4。
+- **待办**:Synthea 的药品命名与 MIMIC 词表差异极大(实测覆盖率 1.8%),映射表需按 LOINC 码重建,见 `docs/design-v2.md` §3。
 
 
 ## 仓库结构

@@ -50,7 +50,7 @@
 
 **对 claim 的实质增强**:美制单位(mg/dL)与国内报告单 SI 制(mmol/L/µmol/L)之间的换算错位,使 F2"单位错误"从人工臆造的数值扰动升级为**国内医院数据集成中系统性真实发生的错误模式**(`configs/terminology_zh/unit_conversions.csv` 即 F2 的语义数据源)。related work 里 2610.21270 的四轴扰动不含单位维度,此处差异再添一层。
 
-注:v2 把主实验数据源换成 Synthea 后,术语映射表须由 MIMIC 词表重建为按 LOINC 码索引(实测 Synthea 药品名对旧词表覆盖率仅 1.8%),详见 `docs/design-v2.md` §4。
+注:v2 把主实验数据源换成 Synthea 后,术语映射表须由 MIMIC 词表重建为按 LOINC 码索引(实测 Synthea 药品名对旧词表覆盖率仅 1.8%),详见 `docs/design-v2.md` §3。
 
 ## 7. 来源
 
