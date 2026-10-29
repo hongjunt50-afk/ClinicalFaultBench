@@ -44,6 +44,9 @@ MIMIC-IV **demo** 本身是 Open Access + ODbL(可再分发),但全量数据受 
 | `results/` | 实验产出(`RESULTS.md` 主报告 / 主图 / 原始 jsonl) |
 | `tests/` | 判分器与故障注入的回归测试(`python -m unittest discover tests`) |
 
+`src/timeline.py` 是 D2(MIMIC-IV demo)适配器,需要额外装 `duckdb`;主实验全程走 Synthea,
+不装也能跑完上面所有不含 D2 的命令(缺 duckdb 时只有该脚本会给出提示并停止)。
+
 ## 复现
 
 前置:Python 3.12+、JDK 17 + [`synthea.jar`](https://github.com/synthetichealth/synthea)(生成合成

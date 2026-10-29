@@ -291,8 +291,6 @@ def check(con: "duckdb.DuckDBPyConnection", data_dir: Path) -> None:
 
 
 def main() -> None:
-    import timeline
-
     ap = argparse.ArgumentParser(description="MIMIC-IV 术语中文化适配层")
     ap.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     ap.add_argument("--patient-id", type=int, help="输出该患者带中文名的时间线 JSON")
@@ -301,11 +299,18 @@ def main() -> None:
     ap.add_argument("--check", action="store_true", help="运行自检断言")
     args = ap.parse_args()
 
+    # 三个分支都要读 MIMIC 数据,只有到这里才需要 duckdb/timeline,--help 用不着
+    if not (args.check or args.coverage or args.patient_id):
+        ap.print_help()
+        return
+
+    import timeline
+
     if args.check:
         check(timeline.connect(args.data_dir), args.data_dir)
     elif args.coverage:
         coverage(timeline.connect(args.data_dir), args.data_dir)
-    elif args.patient_id:
+    else:
         tl = timeline.build_timeline(timeline.connect(args.data_dir), args.data_dir, args.patient_id)
         text = json.dumps(annotate(tl), ensure_ascii=False, indent=2)
         if args.out:
@@ -314,8 +319,6 @@ def main() -> None:
             print(f"{repopaths.rel(args.out)} 写入完成")
         else:
             print(text)
-    else:
-        ap.print_help()
 
 
 if __name__ == "__main__":

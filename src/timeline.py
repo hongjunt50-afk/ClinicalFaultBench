@@ -11,8 +11,10 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import duckdb
+if TYPE_CHECKING:
+    import duckdb
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_DIR = REPO / "data" / "mimic-iv-demo-hf-mirror" / "data"
@@ -55,7 +57,12 @@ def _t(data_dir: Path, table: str) -> str:
     return f"read_parquet('{(data_dir / f'{table}.parquet').as_posix()}')"
 
 
-def connect(data_dir: Path = DEFAULT_DATA_DIR) -> duckdb.DuckDBPyConnection:
+def connect(data_dir: Path = DEFAULT_DATA_DIR) -> "duckdb.DuckDBPyConnection":
+    try:
+        import duckdb
+    except ModuleNotFoundError as exc:  # 主实验走 Synthea,这一档是可选外部校验
+        raise SystemExit("读 MIMIC demo 需要 duckdb(pip install duckdb);"
+                         "主实验用 Synthea,不需要它") from exc
     con = duckdb.connect()
     for table, cols in REQUIRED_COLUMNS.items():
         path = data_dir / f"{table}.parquet"
