@@ -94,6 +94,19 @@ python src/figures.py --model <model>        # 出图
 不落任何原始或派生患者级数据;主实验数据由 Synthea 在本地生成,仓库里没有任何受限数据。
 受限数据(如凭证访问的 MIMIC-IV 全量)不参与本项目任何环节。
 
+## 作者与引用
+
+作者:涂鸿峻、ZCode。
+
+```bibtex
+@misc{clinicalfaultbench2026,
+  title  = {ClinicalFaultBench: A Failure-Audit Benchmark for Clinical AI Agents},
+  author = {涂鸿峻 and ZCode},
+  year   = {2026},
+  url    = {https://github.com/hongjunt50-afk/ClinicalFaultBench}
+}
+```
+
 ## License
 
 MIT
