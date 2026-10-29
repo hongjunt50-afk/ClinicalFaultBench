@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClinicalFaultBench · 临床 AI 智能体失效审计基准</title>
+<meta name="description" content="在坏数据、坏工具、坏时序下度量临床 AI 智能体的失败方式、错误传播与不确定性表达。主实验数据为纯合成 Synthea 患者,零合规风险、可公开复现。">
+<style>
+  :root {
+    --ink: #14181f;
+    --muted: #5b6572;
+    --line: #e3e7ec;
+    --bg: #ffffff;
+    --soft: #f7f9fb;
+    --accent: #b3261e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 16px/1.75 -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 72px 0 40px; border-bottom: 1px solid var(--line); }
+  h1 { font-size: 2.15rem; line-height: 1.25; margin: 0 0 14px; letter-spacing: -.01em; }
+  .lede { font-size: 1.1rem; color: var(--muted); margin: 0 0 26px; max-width: 42em; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .links a {
+    display: inline-block; padding: 8px 16px; border: 1px solid var(--line);
+    border-radius: 6px; color: var(--ink); text-decoration: none; font-size: .93rem;
+  }
+  .links a:hover { background: var(--soft); border-color: #cfd6de; }
+  .links a.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .links a.primary:hover { background: #2b323c; }
+  section { padding: 44px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: 0; }
+  h2 { font-size: 1.28rem; margin: 0 0 18px; letter-spacing: -.005em; }
+  h3 { font-size: 1rem; margin: 26px 0 10px; }
+  p { margin: 0 0 14px; }
+  .kicker { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .finding {
+    border-left: 3px solid var(--accent); padding: 4px 0 4px 18px;
+    margin: 22px 0; font-size: 1.06rem;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: .91rem; margin: 16px 0 10px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+  th { font-weight: 600; color: var(--muted); font-size: .83rem; letter-spacing: .02em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .neg { color: var(--accent); font-weight: 600; }
+  .dim { color: var(--muted); }
+  code, pre {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .87em;
+  }
+  pre {
+    background: var(--soft); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; line-height: 1.6;
+  }
+  code { background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+  pre code { background: none; padding: 0; }
+  figure { margin: 22px 0; }
+  figure img { width: 100%; border: 1px solid var(--line); border-radius: 8px; display: block; }
+  figcaption { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+  ul { padding-left: 1.15em; }
+  li { margin-bottom: 7px; }
+  footer { padding: 40px 0 64px; color: var(--muted); font-size: .88rem; }
+  footer a { color: var(--muted); }
+  .note { font-size: .88rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="kicker">Failure Audit Benchmark · v0.1.0</p>
+    <h1>ClinicalFaultBench</h1>
+    <p class="lede">
+      面向临床 AI 智能体的失效审计基准。往它的数据、工具与时序环境里注入七类临床语义故障,
+      用注入前后的配对差值度量<b>它怎么失败</b>——错误如何传播、会不会害人、敢不敢说不知道。
+      不只测它能不能做对。
+    </p>
+    <div class="links">
+      <a class="primary" href="https://github.com/hongjunt50-afk/ClinicalFaultBench">GitHub 仓库</a>
+      <a href="https://github.com/hongjunt50-afk/ClinicalFaultBench/blob/main/results/RESULTS.md">完整实验报告</a>
+      <a href="https://github.com/hongjunt50-afk/ClinicalFaultBench/blob/main/docs/design-v2.md">设计说明</a>
+      <a href="https://github.com/hongjunt50-afk/ClinicalFaultBench/blob/main/docs/novelty-claim.md">差异化声明</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>一句话结论</h2>
+    <p class="finding">
+      信息缺失是最致命的单一故障——结果截断让两个模型分别掉 <b>0.389</b> / <b>0.365</b>，
+      而「截 30%」与「截 70%」的伤害<b>逐位相等</b>。原因不是噪声：
+      模型从不确认数据是否完整,拿到残缺的检验单就直接往下答。
+    </p>
+    <p class="dim">
+      反过来,禁忌冲突检测在这个维度上已经饱和：两个模型检出率约 100%、误报 0,
+      配对下降不足 0.022。这是本基准必须如实报告的负结果。
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>七类故障 × 两档严重度</h2>
+    <table>
+      <thead>
+        <tr><th>层</th><th>故障</th><th>注入内容</th><th class="num">deepseek 降</th><th class="num">kimi 降</th></tr>
+      </thead>
+      <tbody>
+        <tr><td rowspan="4">数据层</td><td>F1 关键化验缺失</td><td>抹掉答案键依赖的检验值</td><td class="num"><span class="neg">0.084 → 0.197</span></td><td class="num"><span class="neg">0.057 → 0.200</span></td></tr>
+        <tr><td>F2 单位错误</td><td>mg/dL 与 SI 制错位（真实数据集成错误）</td><td class="num"><span class="neg">0.122 / 0.089</span></td><td class="num"><span class="neg">0.071 / 0.143</span></td></tr>
+        <tr><td>F3 矛盾记录</td><td>植入诊断特征禁用的药物</td><td class="num">0.000 / 0.022</td><td class="num">0.000 / 0.016</td></tr>
+        <tr><td>F4 陈旧数据</td><td>化验时间戳前移 2–7 天</td><td class="num"><span class="neg">0.099 / 0.096</span></td><td class="num">0.057 / 0.010</td></tr>
+        <tr><td rowspan="2">工具层</td><td>F5 结果截断</td><td>工具返回被截断</td><td class="num"><span class="neg">0.389 / 0.389</span></td><td class="num"><span class="neg">0.365 / 0.365</span></td></tr>
+        <tr><td>F6 跨患者污染</td><td>混入其他患者的同名检验</td><td class="num">0.040 / 0.111</td><td class="num">−0.006 / 0.095</td></tr>
+        <tr><td>时序层</td><td>F7 时间线漂移</td><td>事件顺序错位</td><td class="num">0.073 / 0.090</td><td class="num">−0.040 / −0.016</td></tr>
+      </tbody>
+    </table>
+    <p class="note">
+      每格 n=10（deepseek）/ n=7（kimi）;数值为 mild → severe 的配对下降（同一任务干净分减故障分）。
+      温度 0 重测实测单任务最大差 0.389,因此 <b>&lt;0.08 的效应都不单独下结论</b>。
+    </p>
+
+    <figure>
+      <img src="img/fig_severity_curve_deepseek-v4.1-flash.png" alt="注入严重度 → 性能变化曲线（deepseek-v4.1-flash）">
+      <figcaption>注入严重度 → 性能变化。F5 的两档完全重合——截断量不影响伤害。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>为什么这个基准值得信</h2>
+    <p>
+      第一版实验（2026-10-27）出过七条结论,其中<b>五条后来被证明是判分器缺陷造成的伪影</b>,
+      每条都错得毫无报错。现在这七个坑都固化成回归测试（23 个用例）:
+    </p>
+    <ul>
+      <li>出院带药在植入禁忌医嘱<b>之前</b>算 → 模型如实列出那条药反被扣分</li>
+      <li>药名不做归一 → 照抄医嘱原文 <code>ibuprofen 1 MG Oral Tablet</code> 算假阳性</li>
+      <li>化验判分只比项目名 → 照抄被污染的错误数值也算满分</li>
+      <li>故障不从答案键定向 → 注入的是纯噪声,读出「严重度反向」</li>
+      <li>禁忌冲突的答案键不含被注入的药 → 正确检出反被算误报,恒为零效应</li>
+      <li>参考区间只按 LOINC 码查不看单位 → 同一码不同单位量纲差 40 倍,100% 的 fL 制 RDW 被判异常</li>
+      <li>故障注入到没有判分通道的任务类型上 → 效应必为 0,却被读成「模型免疫」</li>
+    </ul>
+    <p class="note">
+      还有一个设计缺陷：肌酐的换算因子写成 1.0，等于什么都没做却记录 <code>applied=True</code>，
+      把 F2 的效应稀释到 0.006。改成 ×88.4 之后是 0.143。
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>设计要点</h2>
+
+    <h3>数据三档解耦,代码只认一份 schema</h3>
+    <p>
+      D1 纯合成 Synthea（Apache-2.0，主实验）/ D2 MIMIC-IV demo（Open Access + ODbL，可选外部校验）/
+      D3 院内私有数据（只跑不传，只回传聚合指标）。
+      主实验完全建在合成数据上,<b>零合规风险、可无限扩、任何人能复现</b>。
+    </p>
+
+    <h3>三类纵向病程任务</h3>
+    <p>
+      T1 入院摘要审查 / T2 医嘱冲突审查 / T3 出院准备。答案键全部由结构化数据自动推导,
+      零人工标注。判分是纯函数,不调用任何模型。
+    </p>
+
+    <h3>「识别」与「纠正」是两个指标</h3>
+    <p>
+      F2 单位错误的检出率接近 1.0,配对下降仍有 0.089–0.143。典型样本里模型在
+      <code>data_issues</code> 里明确写「Creatinine 2.9 标记为 mmol/L,但参考范围 0.6–1.3 与 mg/dL 一致,
+      疑单位录入错误」,然后在答案里照抄那个 <code>2.9 mmol/L</code>。
+      只报检出率或只报分数都不够。
+    </p>
+
+    <h3>「凭空加答案」比「答错」更能区分模型</h3>
+    <p>
+      T3 有 14 道题的金标是「出院不需要带药」。一个模型 0/14 幻觉,另一个 6/14 自己加了 2–4 条药。
+      这 6 题单独把 T3 均值拉低 0.061,排除后后者反而更高。
+      这类失败只在「金标允许为空」的任务上看得见,传统「有没有答对」的指标完全漏掉它。
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>复现</h2>
+    <p>前置:Python 3.12+、JDK 17 + <code>synthea.jar</code>。纯规则部分不需要任何 API key。</p>
+<pre><code># 0) 生成合成数据(只需一次)
+java -jar synthea.jar -p 1200 -s 20261026 --exporter.csv.export=true \
+     --exporter.baseDirectory=data/synthea
+python src/synthea.py --check
+
+# 1) 纯规则部分,不花钱
+python src/pool.py --build
+python src/tasks.py --build
+python src/tasks.py --score-toy
+python -m unittest discover tests
+python src/faults.py --selftest
+
+# 2) 调模型(产生 API 费用)
+python src/run.py --model &lt;model&gt;
+python src/matrix.py --model &lt;model&gt; --target-per-fault 10
+
+# 3) 后处理(不花钱)
+python src/rescore.py --model &lt;model&gt;
+python src/figures.py --model &lt;model&gt;
+</code></pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>引用</h2>
+<pre><code>@misc{clinicalfaultbench2026,
+  title  = {ClinicalFaultBench: A Failure-Audit Benchmark for Clinical AI Agents},
+  author = {涂鸿峻 and ZCode},
+  year   = {2026},
+  url    = {https://github.com/hongjunt50-afk/ClinicalFaultBench}
+}
+</code></pre>
+    <p class="note">
+      本仓库只含代码、构造脚本与派生任务描述。原始与派生患者级数据均不入库，
+      受限数据（如凭证访问的 MIMIC-IV 全量）不参与本项目任何环节。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    MIT License · 作者:涂鸿峻、ZCode ·
+    <a href="https://github.com/hongjunt50-afk/ClinicalFaultBench">github.com/hongjunt50-afk/ClinicalFaultBench</a>
+  </div>
+</footer>
+
+</body>
+</html>

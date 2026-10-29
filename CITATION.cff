@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use ClinicalFaultBench in academic work, please cite it as below."
+title: "ClinicalFaultBench: A Failure-Audit Benchmark for Clinical AI Agents"
+abstract: >-
+  ClinicalFaultBench 是面向临床 AI 智能体的失效审计基准。它通过一个对被测方完全透明的
+  故障注入代理层,往智能体的数据、工具与时序环境里注入七类临床语义故障(每类两档严重度),
+  用注入前后的配对错误率、错误传播率、安全违规率、不确定性校准与自纠率五个指标度量
+  它怎么失败,而不只是能不能做对。主实验数据为纯合成 Synthea 患者,零合规风险、可公开复现。
+authors:
+  - family-names: "涂"
+    given-names: "鸿峻"
+  - name: "ZCode"
+version: "0.1.0"
+date-released: "2026-10-29"
+license: MIT
+repository-code: "https://github.com/hongjunt50-afk/ClinicalFaultBench"
+keywords:
+  - clinical AI agents
+  - LLM evaluation
+  - fault injection
+  - benchmark
+  - patient safety
+  - chaos engineering
