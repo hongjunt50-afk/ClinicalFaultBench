@@ -1,6 +1,6 @@
-openai>=1.50
-pandas>=2.2
+# 运行时只依赖两个第三方包,其余全部标准库。
+# duckdb     —— 读 MIMIC demo(T2,可选外部校验)的 parquet/csv
+# matplotlib —— 出图(src/figures.py)
+# 调用模型走 urllib 直连 OpenAI 兼容接口,不需要任何厂商 SDK。
 duckdb>=1.1
-pydantic>=2.7
-tqdm>=4.66
 matplotlib>=3.9

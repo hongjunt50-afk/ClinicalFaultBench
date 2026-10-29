@@ -125,18 +125,6 @@ def _discharge_meds(admission: dict) -> list[str]:
                    and (not e["stoptime"] or e["stoptime"] >= disch)})
 
 
-def _followup_days(idx: synthea.Index, patient_id: str, dischtime: str) -> int | None:
-    """出院后最近一次非住院接诊距出院的天数;Synthea 自带随访安排,可做机器判分。"""
-    nxt = [e["START"] for e in idx.raw_encounters.get(patient_id, [])
-           if e["ENCOUNTERCLASS"] != "inpatient" and synthea._ts(e["START"]) > dischtime]
-    if not nxt:
-        return None
-    from datetime import datetime
-    d1 = datetime.fromisoformat(dischtime)
-    d2 = datetime.fromisoformat(synthea._ts(min(nxt)))
-    return max(0, (d2 - d1).days)
-
-
 def _recheck_labs(admission: dict, ref: dict, top: int = 3) -> list[str]:
     """出院时仍未回到参考区间的检验项(取住院内最后一次测量),按偏离程度排序。
 
@@ -185,16 +173,6 @@ def _plant_conflicts(admission: dict, rules: list[dict]) -> list[dict]:
             "note": rule["note"], "condition_regex": rule["condition_regex"],
         })
     return planted
-
-
-def match_rule(rule: dict, payload: dict) -> bool:
-    """该冲突规则在给定 payload(诊断+医嘱)下是否真的成立。"""
-    conds = " | ".join(d.get("title", "").lower() for d in payload.get("diagnoses", []))
-    if not re.search(rule["condition_regex"], conds):
-        return False
-    existing = [base_drug(e["drug"]) for e in payload.get("events", [])
-                if e.get("category") == "prescription"]
-    return any(base_drug(rule["drug_name"]) in d for d in existing)
 
 
 def _inject_rx(admission: dict, conflicts: list[dict]) -> dict:

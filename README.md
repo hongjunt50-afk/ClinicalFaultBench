@@ -2,8 +2,8 @@
 
 面向医疗 AI 智能体的失效审计基准:在坏数据、坏工具、坏时序下,系统性度量临床大模型智能体的失败方式、错误传播与不确定性表达。不只测它能不能做对,更测它怎么失败。
 
-> 状态:**方案 v2.0(2026-10-26 重设计)**——因 MIMIC-IV 全量的 DUA 与地区访问限制,主实验数据源改为**纯合成 Synthea**;详见 `docs/design-v2.md`。差异化声明见 `docs/novelty-claim.md`。
-> **首批实验结果(deepseek-v4.1-flash,90 任务 + 140 格故障矩阵)见 [`results/RESULTS.md`](results/RESULTS.md)**,含上一版五条结论的作废说明与六个已修判分缺陷的清单。
+> 状态:**方案 v2.0(2026-10-26 重设计)**——主实验数据源为**纯合成 Synthea**;数据架构与合规约束见 `docs/design-v2.md`,差异化声明见 `docs/novelty-claim.md`。
+> **首批实验结果(两个模型,90 任务基线 + 140/98 格故障矩阵)见 [`results/RESULTS.md`](results/RESULTS.md)**,含上一版五条结论的作废说明与七个已修判分缺陷的清单。
 
 ## 一句话结论(2026-10-28)
 
@@ -23,13 +23,14 @@ MIMIC-IV **demo** 本身是 Open Access + ODbL(可再分发),但全量数据受 
 
 同时这也是国内落地的真实需求形态:医院数据不能出院,评测工具必须**可移植到数据方环境运行、只回传聚合指标**——这套设计本身就是论文卖点。
 
-## 国内适配与 v2 路线图(2026-10-25 拍板)
+## 国内适配
 
-国内无公开纵向结构化 EHR(公开临床数据集均为文本/对话类),v1 数据源保持 MIMIC;"适配国内"落在术语层,数据源级泛化走 v2:
+国内无公开纵向结构化 EHR(公开临床数据集均为文本/对话类),"适配国内"落在术语层:
 
-- **中文化适配层**(`src/localization.py` + `configs/terminology_zh/`):检验项目/药品的中文通用名、诊断 ICD-9/10 章节中文名、中美单位制换算表。映射表只含通用医学术语(不触 DUA);demo 数据实测覆盖率:检验事件加权 89.2%、药品医嘱加权 86.9%、诊断章节 100%,未覆盖项由 `python src/localization.py --coverage` 持续暴露。时间线 JSON 中检验/医嘱/诊断自动附加 `label_zh`/`drug_zh`/`chapter_zh` 字段。
-- **F2 故障获得真实语义**:MIMIC 用美制单位(mg/dL),国内报告单用 SI 制(mmol/L/µmol/L)——`unit_conversions.csv` 的换算系数就是 F2"单位错误"故障的真实原型:国内系统接入国外/遗留数据时系统性发生的单位错位,而非人工臆造的数值扰动。
-- **v2(数据源级泛化)**:FaultProxy 的注入函数是数据无关纯函数 `(clean, spec)→corrupted`,换数据只换加载器。等国内真实数据渠道(医院合作 + 伦理审批)走通后,在脱敏中文 EHR 上做泛化验证——直接回应论文最大 limitation(MIMIC 欧美 ICU 人群外推性)。
+- **中文化适配层**(`src/localization.py` + `configs/terminology_zh/`):检验项目/药品的中文通用名、诊断 ICD-9/10 章节中文名、中美单位制换算表。映射表只含通用医学术语,不含任何原始数据。时间线 JSON 中检验/医嘱/诊断自动附加 `label_zh`/`drug_zh`/`chapter_zh` 字段。
+- **F2 故障获得真实语义**:美制单位(mg/dL)与国内报告单 SI 制(mmol/L/µmol/L)之间的换算错位,`unit_conversions.csv` 的换算系数就是 F2"单位错误"故障的真实原型——国内系统接入国外/遗留数据时系统性发生的单位错位,而非人工臆造的数值扰动。
+- **待办**:Synthea 的药品命名与 MIMIC 词表差异极大(实测覆盖率 1.8%),映射表需按 LOINC 码重建,见 `docs/design-v2.md` §4。
+
 
 ## 仓库结构
 
@@ -39,27 +40,56 @@ MIMIC-IV **demo** 本身是 Open Access + ODbL(可再分发),但全量数据受 
 | `configs/` | 实验配置(任务集 `tasks.jsonl`、禁忌规则、参考区间、随机种子冻结) |
 | `configs/terminology_zh/` | 中文化术语映射表(检验/药品/ICD 章节/单位换算,通用医学知识,可再分发) |
 | `data/` | 本地数据目录(gitignore,放 Synthea CSV) |
-| `docs/` | 项目介绍、差异化声明、v2 方案 |
+| `docs/` | 设计说明(`design-v2.md`)、差异化声明(`novelty-claim.md`) |
 | `results/` | 实验产出(`RESULTS.md` 主报告 / 主图 / 原始 jsonl) |
 | `tests/` | 判分器与故障注入的回归测试(`python -m unittest discover tests`) |
 
 ## 复现
 
-```bash
-python src/synthea.py --build-timelines     # Synthea CSV → 病程时间线
-python src/pool.py                          # 分层抽样出任务池
-python src/tasks.py --build                 # 生成 90 个任务实例(T1/T2/T3 各 30)
-python src/tasks.py --score-toy             # 判分链路自检(作弊 agent 必须满分)
-python -m unittest discover tests           # 23 个回归用例
-python src/run.py --model <model>           # 干净基线
-python src/matrix.py --model <model> --target-per-fault 10   # 故障矩阵
-python src/rescore.py                       # 改了判分器后离线重判,不花钱
-python src/figures.py --model <model>       # 出图
+前置:Python 3.12+、JDK 17 + [`synthea.jar`](https://github.com/synthetichealth/synthea)(生成合成
+数据用),以及任意 OpenAI 兼容接口的密钥。**只跑纯规则部分(任务构建、判分自检、单元测试)
+不需要任何 API key。**
+
+密钥放法:在仓库根建一个 `.env`(已在 `.gitignore` 中,不要提交),每行 `KEY=VALUE`,至少两项:
+
 ```
+RELAY_BASE_URL=https://<你的中转或官方地址>/v1
+RELAY_API_KEY=<你的密钥>
+```
+
+也可用环境变量 `RELAY_ENV` 指向别处的同名文件。`src/run.py` 只读取这两个键,其余逻辑与厂商无关。
+
+```bash
+# 0) 生成合成数据(只需一次)
+java -jar synthea.jar -p 1200 -s 20261026 --exporter.csv.export=true \
+     --exporter.baseDirectory=data/synthea
+python src/synthea.py --check                # 自检:规模/排序/完整性断言
+
+# 1) 纯规则部分,不花钱
+python src/pool.py --build                   # 分层抽样 → configs/task_pool.json
+python src/tasks.py --build                  # 生成 90 个任务实例(T1/T2/T3 各 30)
+python src/tasks.py --score-toy              # 判分链路自检(作弊 agent 必须满分、空答案必须 0 分)
+python -m unittest discover tests            # 23 个回归用例
+python src/faults.py --selftest               # 七类故障 × 两档,断言定向性与可复现
+
+# 2) 调模型(产生 API 费用)
+python src/run.py --model <model>                                         # 干净基线 90 任务
+python src/matrix.py --model <model> --target-per-fault 10                # 故障矩阵
+python src/retest.py --model <model> --per-type 3                         # 重测噪声下限
+
+# 3) 后处理(不花钱)
+python src/rescore.py --model <model>        # 改过判分器后离线重判,不重跑模型
+python src/figures.py --model <model>        # 出图
+```
+
+单任务成本差异很大(实测 deepseek-v4.1-flash ≈1.0 credit、kimi-k3.1-pro ≈15.0 credit,
+后者是前者的 14.6 倍),跑矩阵前先用 `--limit` 或 `--budget` 探单价。
 
 ## 合规红线
 
-MIMIC 数据使用协议(DUA)禁止再分发原始数据。本仓库只包含代码、构造脚本与派生任务描述,`data/` 与 `results/examples/` 已在 `.gitignore` 中,不落任何原始或派生患者级数据。
+本仓库只包含代码、构造脚本与派生任务描述。`data/` 与 `results/examples/` 已在 `.gitignore` 中,
+不落任何原始或派生患者级数据;主实验数据由 Synthea 在本地生成,仓库里没有任何受限数据。
+受限数据(如凭证访问的 MIMIC-IV 全量)不参与本项目任何环节。
 
 ## License
 

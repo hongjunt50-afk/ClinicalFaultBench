@@ -122,10 +122,6 @@ def critical_labels(task: dict) -> list[str]:
     return rule_lib.critical_labels(task)
 
 
-def _payload_sig(payload: dict) -> str:
-    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
-
-
 def _stale(record: dict, by_id: dict[str, dict]) -> bool:
     """该矩阵记录是否已失效(任务重建后 prompt/payload 变了,或故障对该任务类型不适用)。
 

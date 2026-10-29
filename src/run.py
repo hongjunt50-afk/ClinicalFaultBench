@@ -29,10 +29,17 @@ import tasks as task_lib  # noqa: E402
 REPO = Path(__file__).resolve().parents[1]
 TASKS_PATH = REPO / "configs" / "tasks.jsonl"
 RESULTS_DIR = REPO / "results"
+# 密钥从环境变量 RELAY_ENV 指定的文件读,默认取仓库根的 .env(已在 .gitignore 里)。
+# 文件格式:每行 KEY=VALUE。不要把密钥写进代码或提交进仓库。
 SECRETS = Path(os.environ.get("RELAY_ENV") or REPO / ".env")
 
 
 def load_secrets() -> dict[str, str]:
+    if not SECRETS.exists():
+        raise SystemExit(
+            f"找不到密钥文件 {SECRETS}。请创建一个每行 KEY=VALUE 的文件,"
+            "至少包含 RELAY_BASE_URL(OpenAI 兼容接口根地址,如 https://host/v1)"
+            "与 RELAY_API_KEY;或用环境变量 RELAY_ENV 指向别处的同名文件。")
     out = {}
     for line in SECRETS.read_text(encoding="utf-8").splitlines():
         if "=" in line and not line.startswith("#"):

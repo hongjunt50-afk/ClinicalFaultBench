@@ -24,18 +24,19 @@ import copy
 import csv
 import json
 import re
-from pathlib import Path
-
 import sys
+from pathlib import Path
+from typing import TYPE_CHECKING
 
-import duckdb
+if TYPE_CHECKING:
+    import duckdb
 
 REPO = Path(__file__).resolve().parents[1]
 TERM_DIR = REPO / "configs" / "terminology_zh"
 DEFAULT_DATA_DIR = REPO / "data" / "mimic-iv-demo-hf-mirror" / "data"
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import timeline  # noqa: E402
+# duckdb 与 timeline 只在读 MIMIC demo 时才用到,这里延迟导入:主实验走 Synthea,
+# 没有 duckdb 的环境也要能跑纯映射表功能(判分、单元测试)。
 
 
 def norm(text: str | None) -> str:
@@ -195,8 +196,10 @@ def annotate(timeline_obj: dict, lab_map: dict | None = None,
     return out
 
 
-def coverage(con: duckdb.DuckDBPyConnection, data_dir: Path) -> None:
+def coverage(con: "duckdb.DuckDBPyConnection", data_dir: Path) -> None:
     """事件加权覆盖率:实际数据里有多少比例的术语/诊断能对上中文映射;未覆盖 top 也列出。"""
+    import timeline
+
     t = lambda x: timeline._t(data_dir, x)  # noqa: E731
     lab_map, drug_map, chapters = load_lab_map(), load_drug_map(), load_icd_chapters()
 
@@ -229,7 +232,9 @@ def coverage(con: duckdb.DuckDBPyConnection, data_dir: Path) -> None:
     print(f"覆盖率 {hit}/{total} = {hit/total:.1%}")
 
 
-def check(con: duckdb.DuckDBPyConnection, data_dir: Path) -> None:
+def check(con: "duckdb.DuckDBPyConnection", data_dir: Path) -> None:
+    import timeline
+
     lab_map, drug_map = load_lab_map(), load_drug_map()
     chapters, conversions = load_icd_chapters(), load_conversions()
     assert len(lab_map) >= 70 and len(drug_map) >= 150 and len(chapters) >= 40, "映射表行数异常"
@@ -283,6 +288,8 @@ def check(con: duckdb.DuckDBPyConnection, data_dir: Path) -> None:
 
 
 def main() -> None:
+    import timeline
+
     ap = argparse.ArgumentParser(description="MIMIC-IV 术语中文化适配层")
     ap.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     ap.add_argument("--patient-id", type=int, help="输出该患者带中文名的时间线 JSON")
