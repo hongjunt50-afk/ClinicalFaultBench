@@ -9,7 +9,7 @@
   - 所有判分都是纯函数,不调用任何模型;LLM-judge 只在 T3 开放字段做辅助。
 
 用法(仓库根目录):
-  python src/tasks.py --build                          # 生成 94 个任务实例
+  python src/tasks.py --build                          # 生成 90 个任务实例(T1/T2/T3 各 30)
   python src/tasks.py --build --per-type 30
   python src/tasks.py --score-toy                      # 用"作弊 agent"验证判分链路
   python src/tasks.py --stats
@@ -27,6 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import localization as loc  # noqa: E402
+import repopaths  # noqa: E402
 import synthea  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -539,7 +540,7 @@ def main() -> None:
             for t in tasks:
                 f.write(json.dumps(t, ensure_ascii=False) + "\n")
         n_by = {t: _count(tasks, t) for t in ("T1", "T2", "T3")}
-        print(f"生成 {len(tasks)} 个任务实例 {n_by} → {OUT_PATH}")
+        print(f"生成 {len(tasks)} 个任务实例 {n_by} → {repopaths.rel(OUT_PATH)}")
         t2_clean = sum(1 for t in tasks if t["task_type"] == "T2"
                        and not t["answer_key"]["conflicts"])
         print(f"T2 中干净对照(无冲突){t2_clean} 个")

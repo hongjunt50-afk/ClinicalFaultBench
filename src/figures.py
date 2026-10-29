@@ -20,6 +20,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import repopaths  # noqa: E402
 import tasks as task_lib  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -126,7 +127,7 @@ def main() -> None:
     p2 = RESULTS / f"fig_fault_drop_{args.model}.png"
     fig_severity_curve(faulted, clean, args.model, p1)
     fig_drop_bars(faulted, args.model, p2)
-    print(f"{p1}\n{p2}")
+    print(f"{repopaths.rel(p1)}\n{repopaths.rel(p2)}")
 
     # 打印表格(论文 Table 用)
     by = defaultdict(lambda: defaultdict(list))

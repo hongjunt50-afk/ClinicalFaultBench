@@ -35,6 +35,9 @@ REPO = Path(__file__).resolve().parents[1]
 TERM_DIR = REPO / "configs" / "terminology_zh"
 DEFAULT_DATA_DIR = REPO / "data" / "mimic-iv-demo-hf-mirror" / "data"
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import repopaths  # noqa: E402
+
 # duckdb 与 timeline 只在读 MIMIC demo 时才用到,这里延迟导入:主实验走 Synthea,
 # 没有 duckdb 的环境也要能跑纯映射表功能(判分、单元测试)。
 
@@ -308,7 +311,7 @@ def main() -> None:
         if args.out:
             args.out.parent.mkdir(parents=True, exist_ok=True)
             args.out.write_text(text, encoding="utf-8")
-            print(f"{args.out} 写入完成")
+            print(f"{repopaths.rel(args.out)} 写入完成")
         else:
             print(text)
     else:

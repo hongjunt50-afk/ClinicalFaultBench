@@ -24,6 +24,7 @@ import urllib.error
 import urllib.request
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import repopaths  # noqa: E402
 import tasks as task_lib  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -144,8 +145,6 @@ def main() -> None:
     ap.add_argument("--rescore", type=Path, help="只对既有结果重判分")
     ap.add_argument("--append", action="store_true",
                     help="追加到既有结果文件(分任务类型分批跑时用),并按 task_id 去重")
-    ap.add_argument("--faults", default="",
-                    help="(兼容 matrix 日志口径)只跑指定故障,此处忽略")
     args = ap.parse_args()
 
     if args.rescore:
@@ -231,7 +230,7 @@ def main() -> None:
     (RESULTS_DIR / f"summary_{args.model}.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2))
-    print(f"明细 → {out_path}")
+    print(f"明细 → {repopaths.rel(out_path)}")
 
 
 if __name__ == "__main__":

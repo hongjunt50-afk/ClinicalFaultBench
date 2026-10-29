@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import repopaths  # noqa: E402
 import run as runner  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -98,7 +99,7 @@ def main() -> None:
     path = RESULTS_DIR / f"retest_{args.model}.json"
     path.write_text(json.dumps({"summary": summary, "rows": rows},
                                ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"→ {path}")
+    print(f"→ {repopaths.rel(path)}")
 
 
 if __name__ == "__main__":

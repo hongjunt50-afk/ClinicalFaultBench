@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import faults as fault_lib  # noqa: E402
+import repopaths  # noqa: E402
 import run as runner  # noqa: E402
 import tasks as rule_lib  # noqa: E402
 
@@ -292,7 +293,7 @@ def main() -> None:
         for r in merged:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     summarize(merged, clean, args.model)
-    print(f"明细 → {out}(本次 {len(results)} 条,累计 {len(merged)} 条)")
+    print(f"明细 → {repopaths.rel(out)}(本次 {len(results)} 条,累计 {len(merged)} 条)")
 
 
 def summarize(records: list[dict], clean: dict[str, float], model: str) -> None:
@@ -346,7 +347,7 @@ def summarize(records: list[dict], clean: dict[str, float], model: str) -> None:
         print(f"  {fault}  " + "  ".join(parts))
     out = RESULTS_DIR / f"matrix_summary_{model}.json"
     out.write_text(json.dumps(table, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"汇总 → {out}")
+    print(f"汇总 → {repopaths.rel(out)}")
     print("注:告警率=模型主动点名被注入项的比例(定向)。干净基线上该值为假阳基线。")
 
 

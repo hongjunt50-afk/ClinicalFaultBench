@@ -18,6 +18,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import repopaths  # noqa: E402
 import synthea  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -93,7 +94,7 @@ def main() -> None:
             "instances": picked,
         }, ensure_ascii=False, indent=2), encoding="utf-8")
         after = Counter(x["reason"] for x in picked)
-        print(f"\n分层后 {len(picked)} 次(病种 {len(after)} 类)→ {OUT_PATH}")
+        print(f"\n分层后 {len(picked)} 次(病种 {len(after)} 类)→ {repopaths.rel(OUT_PATH)}")
         top = after.most_common(1)[0]
         print(f"最大病种占比 {top[1] / len(picked):.1%} ({top[0][:40]})")
         assert len(picked) >= 90, f"分层后不足 90 个实例(实得 {len(picked)})"

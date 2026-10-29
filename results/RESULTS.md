@@ -25,8 +25,8 @@ kimi 单任务 ≈15.0 credit,是 deepseek(≈1.03)的 **14.6 倍**;同样的实
 | F5 最强,降 0.256 | **0.389**,mild = severe 仍完全相等 | 成立且更强 |
 | F4 陈旧数据"几乎零效应"(0.017/0.028) | **0.099 / 0.096** | 作废:零效应是答案键误配的产物 |
 
-**六个已修的判分缺陷**(每个都曾让结果错得毫无报错,全部有回归测试守着,
-见 `tests/test_scoring_and_faults.py`,23 个用例):
+**六个已修的判分缺陷 + 两处设计缺陷**(每个都曾让结果错得毫无报错,判分缺陷全部有
+回归测试守着,见 `tests/test_scoring_and_faults.py`,23 个用例):
 
 1. **T3 出院药在植入禁忌医嘱之前算**。植入的医嘱 `stoptime` 为空 = 出院时仍在用,
    所以它**也是**出院带药。先算再植入,导致模型如实列出那条药反而被 `med_f1` 扣分。
@@ -304,7 +304,7 @@ F7 在 deepseek 上显著、在 kimi 上不显著且为负 —— 结合 §6 的
 - `results/control_{empty,noise}_deepseek-v4.1-flash.json` 空白/噪声 payload 对照(按任务类型)
 - `results/fig_severity_curve_*.png`、`fig_fault_drop_*.png` 每个模型一套
 - `results/log_*.txt` 每次跑批的原始日志(含作废记录的 credit 开销)
-- `tests/test_scoring_and_faults.py` 23 个回归用例,守 §1 的六个缺陷
+- `tests/test_scoring_and_faults.py` 23 个回归用例,守 §1 的六个判分缺陷与适用性闸
 
 ## 11. 下一步
 
